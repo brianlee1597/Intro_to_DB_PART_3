@@ -154,14 +154,6 @@ def index():
   #
   return render_template("index.html", **context)
 
-#
-# This is an example of a different path.  You can see it at:
-#
-#     localhost:8111/another
-#
-# Notice that the function name is another() rather than index()
-# The functions for each app.route need to have different names
-#
 @app.route('/another')
 def another():
   return render_template("another.html")
@@ -170,8 +162,8 @@ def another():
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
-  # name = request.form['name']
-  # g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
+  name = request.form['name']
+  g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
   return redirect('/')
 
 @app.route('/test', methods=['GET'])
@@ -191,19 +183,8 @@ if __name__ == "__main__":
   @click.option('--threaded', is_flag=True)
   @click.argument('HOST', default='0.0.0.0')
   @click.argument('PORT', default=8111, type=int)
+
   def run(debug, threaded, host, port):
-    """
-    This function handles command line parameters.
-    Run the server using:
-
-        python3 server.py
-
-    Show the help text using:
-
-        python3 server.py --help
-
-    """
-
     HOST, PORT = host, port
     print("running on %s:%d" % (HOST, PORT))
     app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
