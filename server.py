@@ -13,10 +13,15 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+from dotenv import load_dotenv
+
+load_dotenv()
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
+s_user = os.environ.get('USERNAME')
+s_pass = os.environ.get('PASSWORD')
 
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
@@ -29,8 +34,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 #     DATABASEURI = "postgresql://gravano:foobar@34.75.94.195/proj1part2"
 #
-DATABASEURI = "postgresql://hw2910:2608@34.75.94.195/proj1part2"
-
+DATABASEURI = f"postgresql://{s_user}:{s_pass}@34.75.94.195/proj1part2"
 
 #
 # This line creates a database engine that knows how to connect to the URI above.
