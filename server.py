@@ -1,15 +1,4 @@
-
-"""
-Columbia's COMS W4111.001 Introduction to Databases
-Example Webserver
-To run locally:
-    python3 server.py
-Go to http://localhost:8111 in your browser.
-A debugger such as "pdb" may be helpful for debugging.
-Read about it online.
-"""
 import os
-  # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
@@ -23,23 +12,10 @@ app = Flask(__name__, template_folder=tmpl_dir)
 s_user = os.environ.get('USERNAME')
 s_pass = os.environ.get('PASSWORD')
 
-#
-# The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
-#
-# XXX: The URI should be in the format of:
-#
-#     postgresql://USER:PASSWORD@34.75.94.195/proj1part2
-#
-# For example, if you had username gravano and password foobar, then the following line would be:
-#
-#     DATABASEURI = "postgresql://gravano:foobar@34.75.94.195/proj1part2"
-#
 DATABASEURI = f"postgresql://{s_user}:{s_pass}@34.75.94.195/proj1part2"
-
-#
-# This line creates a database engine that knows how to connect to the URI above.
-#
 engine = create_engine(DATABASEURI)
+
+print(engine.table_names())
 
 #
 # Example of running queries in your database
@@ -54,13 +30,6 @@ engine = create_engine(DATABASEURI)
 
 @app.before_request
 def before_request():
-  """
-  This function is run at the beginning of every web request
-  (every time you enter an address in the web browser).
-  We use it to setup a database connection that can be used throughout the request.
-
-  The variable g is globally accessible.
-  """
   try:
     g.conn = engine.connect()
   except:
@@ -70,10 +39,6 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(exception):
-  """
-  At the end of the web request, this makes sure to close the database connection.
-  If you don't, the database could run out of memory!
-  """
   try:
     g.conn.close()
   except Exception as e:
@@ -106,74 +71,92 @@ def index():
 
   """
 
-  # DEBUG: this is debugging code to see what request looks like
-  print(request.args)
-
-
-  #
-  # example of a database query
-  #
-  cursor = g.conn.execute("SELECT name FROM test")
-  names = []
-  for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
-  cursor.close()
-
-  #
-  # Flask uses Jinja templates, which is an extension to HTML where you can
-  # pass data to a template and dynamically generate HTML based on the data
-  # (you can think of it as simple PHP)
-  # documentation: https://realpython.com/primer-on-jinja-templating/
-  #
-  # You can see an example template in templates/index.html
-  #
-  # context are the variables that are passed to the template.
-  # for example, "data" key in the context variable defined below will be
-  # accessible as a variable in index.html:
-  #
-  #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-  #     <div>{{data}}</div>
-  #
-  #     # creates a <div> tag for each element in data
-  #     # will print:
-  #     #
-  #     #   <div>grace hopper</div>
-  #     #   <div>alan turing</div>
-  #     #   <div>ada lovelace</div>
-  #     #
-  #     {% for n in data %}
-  #     <div>{{n}}</div>
-  #     {% endfor %}
-  #
-  context = dict(data = names)
-
-
   #
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  
+  user_results = g.conn.execute("SELECT * FROM Users LIMIT 4")
+  users = []
+  for result in user_results:
+    users.append(result)
+  user_results.close()
 
-@app.route('/another')
-def another():
-  return render_template("another.html")
+  # prop_results = g.conn.execute("SELECT * FROM Rentals LIMIT 4")
+  # properties = []
+  # for result in prop_results:
+  #   properties.append(result)
+  # prop_results.close()
+
+  return render_template("index.html", users = users)
+
+@app.route('/rentals')
+def rentals():
+
+  results = g.conn.execute("SELECT * FROM Rental")
+  rentals = []
+  for result in results:
+    rentals.append(result)
+  results.close()
+
+  data = dict(data = rentals)
+
+  return render_template("rentals.html")
+
+@app.route('/users')
+def users():
+
+  category = request.args.get("category")  
+
+  SQL_QUERY = "SELECT * FROM USERS u"
+
+  if category == "hosts":
+    SQL_QUERY += ", Hosts h WHERE u.uid = h.uid"
+  
+  if category == "renters":
+    SQL_QUERY += ", Renters r WHERE u.uid = r.uid"
+
+  results = g.conn.execute(SQL_QUERY)
+  users = []
+  for result in results:
+    users.append(result)
+  results.close()
+
+  return render_template("users.html", users = users, category = category)
+
+@app.route('/users/user')
+def user():
+
+  uid = request.args.get("uid")
+
+  return render_template("user.html")
+
+@app.route('/login')
+def login():
+
+  return render_template("login.html")
+
+@app.route('/create')
+def create():
+
+  return render_template("create.html")
 
 
 # Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add():
-  name = request.form['name']
-  g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
-  return redirect('/')
+# @app.route('/add', methods=['POST'])
+# def add():
+#   name = request.form['name']
+#   g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
+#   return redirect('/')
 
-@app.route('/test', methods=['GET'])
-def test():
-  result = g.conn.execute('SELECT p.size from Properties p')
+# @app.route('/test', methods=['GET'])
+# def test():
+#   result = g.conn.execute('SELECT p.size from Properties p')
 
-  for row in result:
-    print(row)
+#   for row in result:
+#     print(row)
 
-  return redirect('/')
+#   return redirect('/')
 
 if __name__ == "__main__":
   import click

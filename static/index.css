@@ -1,0 +1,112 @@
+#main_container {
+    margin: 0 100px;
+    padding-top: 125px;
+    padding-bottom: 125px;
+}
+
+#main_container > .rentals {
+    margin-top: 25px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+#main_container > .users {
+    margin-top: 50px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+#main_container > .rentals > .basic_nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 25px 0 0;
+}
+
+#main_container > .rentals > .rentals_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    height: auto;
+}
+
+#main_container > .rentals > .rentals_grid > .indiv_rental {
+    width: 100%;
+    height: 350px;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+#main_container > .users > .basic_nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 25px 0 10px;
+}
+
+#main_container > .users > .basic_nav > a {
+    color: grey;
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid grey;
+}
+
+#main_container > .users > .users_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    height: auto;
+}
+
+#main_container > .users > .users_grid > a {
+    text-decoration: none;
+    color: black;
+}
+
+#main_container > .users > .users_grid > a > .indiv_user {
+    width: 100%;
+    height: 350px;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    cursor: pointer;
+}
+
+#main_container > .users > .users_grid > a > .indiv_user:hover {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+#main_container > .users > .users_grid > a > .indiv_user > .user_image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+#main_container > .users > .users_grid > a > .indiv_user > .user_info {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#main_container > .users > .users_grid > a > .indiv_user > .user_info > h6 {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 15px;
+
+    font-size: 15px;
+}
