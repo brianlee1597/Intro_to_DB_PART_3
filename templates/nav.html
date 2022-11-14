@@ -19,12 +19,22 @@
             let html;
 
             if (loggedIn) {
-                html = `<a href="/user?uid=${uid}" class="login_link"><button class="my_profile">My Profile</button></a>`
+                html = `
+                    <div class="loggedin_buttons">
+                        <a href="/user?uid=${uid}" class="login_link"><button class="my_profile">My Profile</button></a>
+                        <a onclick="logout()" class="login_link"><button class="logout">Log Out</button></a>
+                    </div>
+                `
             } else {
                 html = `<a href="/login" class="login_link"><button class="login_button">Login / Create Account</button></a>`
             }
 
             document.getElementById("nav_container").innerHTML += html;
         })
+
+        function logout() {
+            localStorage.clear();
+            window.location = "/";
+        }
     </script>
 </nav>

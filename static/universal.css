@@ -57,9 +57,24 @@ nav > .inner_container > .login_link > .login_button {
     cursor: pointer;
 }
 
-nav > .inner_container > .login_link > .my_profile {
+nav > .inner_container > .loggedin_buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+nav > .inner_container > .loggedin_buttons > .login_link > .my_profile {
     color: white;
     background-color: black;
+    border: 1px solid black;
+    padding: 10px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+nav > .inner_container > .loggedin_buttons > .login_link > .logout {
+    color: black;
+    background-color: transparent;
     border: 1px solid black;
     padding: 10px 30px;
     border-radius: 25px;
