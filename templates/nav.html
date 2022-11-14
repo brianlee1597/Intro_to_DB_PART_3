@@ -8,8 +8,23 @@
 {% endif %}
 
 <nav>
-    <div class="inner_container">
+    <div id="nav_container" class="inner_container">
       <h3><a href="/">PROJ3</a></h3>
-      <a href="/login" class="login_link"><button class="login_button">Login / Create Account</button></a>
     </div>
+
+    <script>
+        window.addEventListener("load", () => {
+            const loggedIn = localStorage.getItem('loggedIn');
+            const uid = localStorage.getItem('uid');
+            let html;
+
+            if (loggedIn) {
+                html = `<a href="/user?uid=${uid}" class="login_link"><button class="my_profile">My Profile</button></a>`
+            } else {
+                html = `<a href="/login" class="login_link"><button class="login_button">Login / Create Account</button></a>`
+            }
+
+            document.getElementById("nav_container").innerHTML += html;
+        })
+    </script>
 </nav>

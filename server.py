@@ -2,7 +2,7 @@ import os
 from sqlalchemy import *
 import datetime
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask, request, render_template, g, redirect, Response, jsonify, make_response
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,17 +17,6 @@ DATABASEURI = f"postgresql://{s_user}:{s_pass}@34.75.94.195/proj1part2"
 engine = create_engine(DATABASEURI)
 
 print(engine.table_names())
-
-#
-# Example of running queries in your database
-# Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
-#
-# engine.execute("""CREATE TABLE IF NOT EXISTS test (
-#   id serial,
-#   name text
-# );""")
-# engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
-
 
 @app.before_request
 def before_request():
@@ -44,6 +33,8 @@ def teardown_request(exception):
     g.conn.close()
   except Exception as e:
     pass
+
+########## URIS ##########
 
 @app.route('/')
 def index():
@@ -139,39 +130,117 @@ def rentals():
     sort_html=sort_html
   )
 
-@app.route('/users/user')
-def user():
-
-  uid = request.args.get("uid")
-
-  return render_template("user.html")
-
 @app.route('/login')
 def login():
-
   return render_template("login.html")
 
 @app.route('/create')
 def create():
+  return render_template("create.html", duplicate=False, error=False)
 
-  return render_template("create.html")
+@app.route('/user')
+def user():
+  uid = request.args.get('uid')
 
+  USER_QUERY = g.conn.execute("""
+    SELECT uid, first_name, last_name, phone_number
+    FROM Users
+    WHERE uid = {}
+  """.format(uid))
 
-# Example of adding new data to the database
-# @app.route('/add', methods=['POST'])
-# def add():
-#   name = request.form['name']
-#   g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
-#   return redirect('/')
+  try:
+    user_info = USER_QUERY.one()
+    user = []
+    for info in user_info:
+      user.append(info)
 
-# @app.route('/test', methods=['GET'])
-# def test():
-#   result = g.conn.execute('SELECT p.size from Properties p')
+    user_rentals = []
 
-#   for row in result:
-#     print(row)
+    USER_RENTALS_QUERY = """
+    """
+    # need all user rentals query here, and g.conn.execute to get all rows
+    # which you can for loop it and append it to user_rentals for display.
 
-#   return redirect('/')
+    return render_template("user.html", user=user, user_rentals=user_rentals)
+  except:
+    return render_template('405.html')
+
+########## URIS ##########
+
+########## API ENDPOINTS ##########
+
+@app.route('/create_profile', methods=['POST'])
+def createprofile():
+  first_name = request.form['first_name']
+  last_name = request.form['last_name']
+  phone_number = request.form['phone_number']
+  password = request.form['password']
+  
+  CHECK_QUERY = """
+    SELECT uid
+    FROM Users
+    WHERE first_name = '{}' AND last_name = '{}' AND phone_number = '{}'
+  """.format(first_name, last_name, phone_number)
+
+  check_for_dup = g.conn.execute(CHECK_QUERY)
+
+  if int(check_for_dup.rowcount) != 0:
+    return render_template('/create.html', duplicate=True)
+
+  check_for_dup.close()
+
+  largest_uid = g.conn.execute("""
+    SELECT MAX(uid) as uid
+    FROM Users
+  """)
+
+  uid = largest_uid.one()['uid']
+  largest_uid.close()
+
+  uid = int(uid) + 1
+
+  g.conn.execute("""
+    INSERT INTO Users(uid, first_name, last_name, phone_number, password)
+    VALUES (%s, %s, %s, %s, %s)
+  """, uid, first_name, last_name, phone_number, password)
+
+  return redirect('/login')
+
+@app.route('/login_user', methods=['POST', 'GET'])
+def login_user():
+  if request.method == "POST":
+    phone_number = request.form['phone_number']
+    password = request.form['password']
+
+    CHECK_USER_STATUS = """
+      SELECT uid
+      FROM Users
+      WHERE phone_number = '{}' AND password = '{}'
+    """.format(phone_number, password)
+
+    user = g.conn.execute(CHECK_USER_STATUS)
+
+    try:
+      uid = user.one()['uid']
+      data = {'message': 'Logged In', 'code': 'SUCCESS', 'uid': uid}
+      return make_response(jsonify(data), 200)
+    except:
+      data = {'message': 'No User Found', 'code': 'FAIL'}
+      return make_response(jsonify(data), 401)
+
+  return redirect("/login")
+
+@app.route('/create_rental', methods=['POST'])
+def create_rental():
+  uid = request.form['uid']
+
+  # need create rental SQL query here and g.conn.execute it
+  # if the database is updated, the redirect page will update the user rental query and display it
+  # no need to send any data back
+
+  return redirect('/user?uid=' + uid)
+
+########## API ENDPOINTS ##########
 
 if __name__ == "__main__":
   import click

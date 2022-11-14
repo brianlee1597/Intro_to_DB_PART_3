@@ -4,16 +4,65 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='users.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='user.css') }}">
     <title>User Page</title>
 </head>
 <body>
-
     {% extends "layout.html" %}
 
     {% block content %}
     <div id="main_container">
+        <div id="inner_grid">
+            <div id="left_user_info">
+                <div class="user_info">
+                    <div>
+                        <img class="user_image" 
+                        src="https://images.pexels.com/photos/1182825/pexels-photo-1182825.jpeg?cs=srgb&dl=pexels-omar-l%C3%B3pez-1182825.jpg&fm=jpg&w=640&h=427&_gl=1*17slk5g*_ga*MTA4MTIyODk5MC4xNjY4NDAzOTEz*_ga_8JE65Q40S6*MTY2ODQwMzkxNC4xLjEuMTY2ODQwMzk3Mi4wLjAuMA.."/>
+                    </div>
+                    <div class="info">
+                        <h4 class="bubble">
+                            <span>User ID:</span>
+                            <span>{{user[0]}}</span>
+                        </h4>
+                        <h4 class="bubble">
+                            <span>Name:</span>
+                            <span>{{user[1]}} {{user[2]}}</span>
+                        </h4>
+                        <h4 class="bubble">
+                            <span>Phone #:</span>
+                            <span>{{user[3]}}</span>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div id="right_rentals">
+                
+            </div>
+        </div>
     </div>
+
+    <script>
+        const uid = '{{user[0]}}';
+        
+        window.addEventListener('load', () => {
+            const user_info = document.getElementById("left_user_info");
+
+            if (uid === localStorage.getItem('uid')) {
+                user_info.innerHTML += `
+                    <div class="create_rental">
+                        <h2>Create Rental</h2>
+                        <form id="cr_form" method="POST" action="create_rental">
+                            <input name="uid" type="text" value="{{user[0]}}" hidden/>
+
+                            Need Inputs Here
+
+                            <button type="submit">Submit</button>
+                        </form>
+                    </div>
+                `
+            }
+        })
+    </script>
     {% endblock %}
     
 </body>
