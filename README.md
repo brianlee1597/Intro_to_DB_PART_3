@@ -27,6 +27,12 @@ Then try running using
 python3 server.py
 ```
 
+or
+
+```bash
+flask --app server --debug run
+```
+
 if you are getting an error after this step, execute code below on terminal then try again:
 
 ```bash
