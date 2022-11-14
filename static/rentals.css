@@ -33,7 +33,7 @@
     color: black;
 }
 
-#main_container > .rentals_grid > a > .indiv_rental {
+#main_container > .rentals_grid > .indiv_rental {
     width: 100%;
     height: 350px;
     border-radius: 10px;
@@ -41,18 +41,18 @@
     cursor: pointer;
 }
 
-#main_container > .rentals_grid > a > .indiv_rental:hover {
+#main_container > .rentals_grid > .indiv_rental:hover {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
-#main_container > .rentals_grid > a > .indiv_rental > .rental_image {
+#main_container > .rentals_grid > .indiv_rental > .rental_image {
     width: 100%;
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
 }
 
-#main_container > .rentals_grid > a > .indiv_rental > .rental_info {
+#main_container > .rentals_grid > .indiv_rental > .rental_info {
     width: 100%;
     height: 150px;
     display: flex;
@@ -60,7 +60,7 @@
     justify-content: space-evenly;
 }
 
-#main_container > .rentals_grid > a > .indiv_rental > .rental_info > h6 {
+#main_container > .rentals_grid > .indiv_rental > .rental_info > h6 {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -70,5 +70,22 @@
     justify-content: space-between;
     padding: 0 15px;
 
+    font-size: 15px;
+}
+
+.owned_link {
+    color: black;
+    cursor: pointer;
+}
+
+.owned {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 15px;
     font-size: 15px;
 }

@@ -59,7 +59,6 @@
 
         <div class="rentals_grid">
             {% for rental in rentals %}
-            <a href="">
               <div class="indiv_rental">
                 <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"
                 class="rental_image"/>
@@ -72,13 +71,14 @@
                     <span>Property Size:</span>
                     <span>{{rental[1]}}</span>
                   </h6>
-                  <h6>
-                    <span>Owned By (User ID):</span>
-                    <span>{{rental[2]}}</span>
-                  </h6>
+                  <a class="owned_link" href="/user?uid={{rental[2]}}">
+                    <h6 class="owned">
+                      <span>Owned By (User ID):</span>
+                      <span>{{rental[2]}}</span>
+                    </h6>
+                  </a>
                 </div>
               </div>
-            </a>
             {% endfor %}
         </div>
     </div>
