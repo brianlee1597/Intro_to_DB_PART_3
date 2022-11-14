@@ -1,6 +1,7 @@
 body {
     width: 100vw;
     max-width: 2100px;
+    overflow-x: hidden;
     height: auto;
     margin: 0;
     padding: 0;
