@@ -6,3 +6,58 @@ body {
     padding: 0;
     font-family: "Montserrat", sans-serif;
 }
+
+nav {
+    box-sizing: border-box;
+    position: fixed;
+    width: 100%;
+    max-width:100%;
+    height: 125px;
+    max-height: 125px;
+    background-color: transparent;
+
+    display: grid;
+    place-items: center;
+    padding: 25px 50px;
+}
+
+nav > .inner_container {
+    background-color: white;
+    box-sizing: border-box; 
+
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;  
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;    
+
+    padding: 0 50px;
+    z-index: 10;
+}
+
+nav > .inner_container > h3 > a {
+    color: black;
+    text-decoration: none;
+}
+
+nav > .inner_container > .login_link {
+    text-decoration: none;
+}
+
+nav > .inner_container > .login_link > .login_button {
+    color: black;
+    background-color: transparent;
+    border: 1px solid black;
+    padding: 10px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+nav > .inner_container > .login_link > .login_button:hover {
+    color: white;
+    background-color: black;
+}
