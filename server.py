@@ -98,7 +98,7 @@ def rentals():
     FROM is_available
   """
 
-  ALL_RENTALS = """
+  RENTALS = """
     Select DISTINCT ON(P.{}) * 
     FROM owned_properties P, is_available A 
     WHERE P.pid  = A.pid AND A.start_date >= '{}' AND A.end_date <= '{}'
@@ -121,10 +121,11 @@ def rentals():
   results = g.conn.execute(MAX_TO)
   max_to = results.one()['end_date']
 
-  results = g.conn.execute(ALL_RENTALS)
+  results = g.conn.execute(RENTALS)
   rentals = []
   for result in results:
     rentals.append(result)
+    
   results.close()
 
   return render_template(
