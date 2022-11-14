@@ -8,31 +8,19 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 25px;
+    justify-content: space-between;
+    padding: 0 25px;
 }
 
-#main_container > #filter_bar > .choices {
+#main_container > #filter_bar > .filters {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 25px;
 }
 
-#main_container > #filter_bar > .choices > a > button {
-    background: transparent;
-    padding: 15px 30px;
-    border: 2px solid black;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-}
 
-#main_container > #filter_bar > .choices > a > .chosen {
-    background: black;
-    color: white;
-}
-
-#main_container > .users_grid {
+#main_container > .rentals_grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
@@ -40,12 +28,12 @@
     margin-top: 50px;
 }
 
-#main_container > .users_grid > a {
+#main_container > .rentals_grid > a {
     text-decoration: none;
     color: black;
 }
 
-#main_container > .users_grid > a > .indiv_user {
+#main_container > .rentals_grid > a > .indiv_rental {
     width: 100%;
     height: 350px;
     border-radius: 10px;
@@ -53,18 +41,18 @@
     cursor: pointer;
 }
 
-#main_container > .users_grid > a > .indiv_user:hover {
+#main_container > .rentals_grid > a > .indiv_rental:hover {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
-#main_container > .users_grid > a > .indiv_user > .user_image {
+#main_container > .rentals_grid > a > .indiv_rental > .rental_image {
     width: 100%;
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
 }
 
-#main_container > .users_grid > a > .indiv_user > .user_info {
+#main_container > .rentals_grid > a > .indiv_rental > .rental_info {
     width: 100%;
     height: 150px;
     display: flex;
@@ -72,7 +60,7 @@
     justify-content: space-evenly;
 }
 
-#main_container > .users_grid > a > .indiv_user > .user_info > h6 {
+#main_container > .rentals_grid > a > .indiv_rental > .rental_info > h6 {
     box-sizing: border-box;
     margin: 0;
     padding: 0;

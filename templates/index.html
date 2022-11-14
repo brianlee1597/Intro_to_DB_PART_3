@@ -13,43 +13,29 @@
 
   {% block content %}
   <div id="main_container">
-    <div class="rentals">
-      <div class="basic_nav">
-        <h1>New Rentals</h1>
-        <a>See all rentals</a>
-      </div>
-      <div class="rentals_grid">
-        {{properties}}
-        <div class="indiv_rental"></div>
-        <div class="indiv_rental"></div>
-        <div class="indiv_rental"></div>
-        <div class="indiv_rental"></div>
-      </div>
-    </div>
-
     <div class="users">
       <div class="basic_nav">
-        <h1>Users</h1>
-        <a href="users?category=all">See all users</a>
+        <h1>Featured Rentals</h1>
+        <a href="rentals?from={{min_start}}&to={{max_to}}&order_by=pid&sort_by=ASC">See all rentals</a>
       </div>
       <div class="users_grid">
-        {% for user in users %}
-        <a href="users/user?uid={{user[0]}}">
+        {% for rental in rentals %}
+        <a href="">
           <div class="indiv_user">
             <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?cs=srgb&dl=pexels-justin-shaifer-1222271.jpg&fm=jpg&w=640&h=427"
             class="user_image"/>
             <div class="user_info">
               <h6>
-                <span>UID:</span>
-                <span>{{user[0]}}</span>
+                <span>Property ID:</span>
+                <span>{{rental[0]}}</span>
               </h6>
               <h6>
-                <span>Name:</span>
-                <span>{{user[1]}} {{user[2]}}</span>
+                <span>Size:</span>
+                <span>{{rental[1]}}</span>
               </h6>
               <h6>
-                <span>Phone Number:</span>
-                <span>{{user[3]}}</span>
+                <span>Owned By (User ID):</span>
+                <span>{{rental[2]}}</span>
               </h6>
             </div>
           </div>

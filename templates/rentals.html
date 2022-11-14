@@ -1,1 +1,99 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='rentals.css') }}">
+    <title>All Users</title>
+</head>
+<body>
+    {% extends "layout.html" %}
+
+    {% block content %}
+    <div id="main_container">
+        <div id="filter_bar">
+            <h2>Show Me:</h2>
+            <div class="filters">
+                <label for="start_from">
+                    Start From:
+                    <input 
+                    type="date" 
+                    id="start_from"
+                    name="start_from" 
+                    value="{{curr_start}}" 
+                    min="{{min_start}}" 
+                    max="{{max_to}}"
+                    >
+                </label>
+                <label for="end_at">
+                    End At:
+                    <input 
+                    type="date" 
+                    id="end_at"
+                    name="end_at" 
+                    value="{{curr_end}}" 
+                    min="{{min_start}}" 
+                    max="{{max_to}}"
+                    >
+                </label>
+                <label for="order_by">
+                    Order By:
+                    <select name="order_by" id="order_by">
+                        {% for order in order_html %}
+                        <option {{ "selected='selected'" if order[0] == True else "" }} value="{{order[1]}}">{{order[2]}}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label for="order_by">
+                    Sort By:
+                    <select name="sort_by" id="sort_by">
+                        {% for sort in sort_html %}
+                        <option {{ "selected='selected'" if sort[0] == True else "" }} value="{{sort[1]}}">{{sort[2]}}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <button onclick="refresh()">Submit</button>
+        </div>
+
+        <div class="rentals_grid">
+            {% for rental in rentals %}
+            <a href="">
+              <div class="indiv_rental">
+                <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?cs=srgb&dl=pexels-justin-shaifer-1222271.jpg&fm=jpg&w=640&h=427"
+                class="rental_image"/>
+                <div class="rental_info">
+                  <h6>
+                    <span>Property ID:</span>
+                    <span>{{rental[0]}}</span>
+                  </h6>
+                  <h6>
+                    <span>Size:</span>
+                    <span>{{rental[1]}}</span>
+                  </h6>
+                  <h6>
+                    <span>Owned By (User ID):</span>
+                    <span>{{rental[2]}}</span>
+                  </h6>
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function refresh () {
+            const start_from = document.getElementById("start_from").value;
+            const end_at = document.getElementById("end_at").value;
+            const order_by = document.getElementById("order_by").value;
+            const sort_by = document.getElementById("sort_by").value;
+
+            const url = `/rentals?from=${start_from}&to=${end_at}&order_by=${order_by}&sort_by=${sort_by}`;
+            window.location = url;
+        }
+    </script>
+    {% endblock %}
+</body>
+</html>

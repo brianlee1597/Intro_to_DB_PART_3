@@ -1,5 +1,6 @@
 import os
 from sqlalchemy import *
+import datetime
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
 from dotenv import load_dotenv
@@ -44,85 +45,98 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
-
-#
-# @app.route is a decorator around index() that means:
-#   run index() whenever the user tries to access the "/" path using a GET request
-#
-# If you wanted the user to go to, for example, localhost:8111/foobar/ with POST or GET then you could use:
-#
-#       @app.route("/foobar/", methods=["POST", "GET"])
-#
-# PROTIP: (the trailing / in the path is important)
-#
-# see for routing: https://flask.palletsprojects.com/en/2.0.x/quickstart/?highlight=routing
-# see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
-#
 @app.route('/')
 def index():
-  """
-  request is a special object that Flask provides to access web request information:
 
-  request.method:   "GET" or "POST"
-  request.form:     if the browser submitted a form, this contains the data in the form
-  request.args:     dictionary of URL arguments, e.g., {a:1, b:2} for http://localhost?a=1&b=2
-
-  See its API: https://flask.palletsprojects.com/en/2.0.x/api/?highlight=incoming%20request%20data
-
+  FEATURED_RENTALS = """
+    SELECT DISTINCT ON(P.pid) * 
+    FROM owned_properties P, is_available A 
+    WHERE P.pid  = A.pid 
+    LIMIT 4
   """
 
-  #
-  # render_template looks in the templates/ folder for files.
-  # for example, the below file reads template/index.html
-  #
-  
-  user_results = g.conn.execute("SELECT * FROM Users LIMIT 4")
-  users = []
-  for result in user_results:
-    users.append(result)
-  user_results.close()
+  MIN_FROM = """
+    SELECT MIN(start_date) as start_date 
+    FROM is_available
+  """
 
-  # prop_results = g.conn.execute("SELECT * FROM Rentals LIMIT 4")
-  # properties = []
-  # for result in prop_results:
-  #   properties.append(result)
-  # prop_results.close()
+  MAX_TO = """
+    SELECT MAX(end_date) as end_date 
+    FROM is_available
+  """
 
-  return render_template("index.html", users = users)
+  results = g.conn.execute(MIN_FROM)
+  min_start = results.one()['start_date']
+
+  results = g.conn.execute(MAX_TO)
+  max_to = results.one()['end_date']
+
+  results = g.conn.execute(FEATURED_RENTALS)
+  rentals = []
+  for result in results:
+    rentals.append(result)
+
+  results.close()
+
+  return render_template("index.html", rentals=rentals, min_start=min_start, max_to=max_to)
 
 @app.route('/rentals')
 def rentals():
 
-  results = g.conn.execute("SELECT * FROM Rental")
+  start_from = request.args.get("from")
+  end_at = request.args.get("to")
+  order_by = request.args.get("order_by")
+  sort_by = request.args.get("sort_by")
+
+  MIN_FROM = """
+    SELECT MIN(start_date) as start_date 
+    FROM is_available
+  """
+
+  MAX_TO = """
+    SELECT MAX(end_date) as end_date 
+    FROM is_available
+  """
+
+  ALL_RENTALS = """
+    Select DISTINCT ON(P.{}) * 
+    FROM owned_properties P, is_available A 
+    WHERE P.pid  = A.pid AND A.start_date >= '{}' AND A.end_date <= '{}'
+    ORDER BY P.{} {}
+  """.format(order_by, start_from, end_at, order_by, sort_by)
+
+  order_html = [
+    [order_by == 'pid', 'pid', "Property ID"],
+    [order_by == 'size', 'size', "Property Size"]
+  ]
+
+  sort_html = [
+    [sort_by == 'ASC', 'ASC', "Ascending"],
+    [sort_by == 'DESC', 'DESC', "Descending"]
+  ]
+
+  results = g.conn.execute(MIN_FROM)
+  min_start = results.one()['start_date']
+
+  results = g.conn.execute(MAX_TO)
+  max_to = results.one()['end_date']
+
+  results = g.conn.execute(ALL_RENTALS)
   rentals = []
   for result in results:
     rentals.append(result)
   results.close()
 
-  data = dict(data = rentals)
-
-  return render_template("rentals.html")
-
-@app.route('/users')
-def users():
-
-  category = request.args.get("category")  
-
-  SQL_QUERY = "SELECT * FROM USERS u"
-
-  if category == "hosts":
-    SQL_QUERY += ", Hosts h WHERE u.uid = h.uid"
-  
-  if category == "renters":
-    SQL_QUERY += ", Renters r WHERE u.uid = r.uid"
-
-  results = g.conn.execute(SQL_QUERY)
-  users = []
-  for result in results:
-    users.append(result)
-  results.close()
-
-  return render_template("users.html", users = users, category = category)
+  return render_template(
+    "rentals.html", 
+    rentals=rentals, 
+    min_start=min_start, 
+    max_to=max_to, 
+    curr_start=start_from, 
+    curr_end=end_at,
+    order_html=order_html,
+    sort_html=sort_html
+  )
 
 @app.route('/users/user')
 def user():
