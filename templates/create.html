@@ -27,6 +27,17 @@
             <button type="submit">Submit</button>
         </form>
     </div>
+
+    <script>
+         window.addEventListener("load", () => {
+            const form = document.getElementById('form_container');
+            const dup = '{{duplicate}}';
+
+            if (dup == 'True') {
+                form.innerHTML += "<h5 class='warning'>Phone Number Already Exists.</h5>";
+            }
+         })
+    </script>
     {% endblock %}
 </body>
 </html>

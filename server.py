@@ -179,8 +179,8 @@ def createprofile():
   CHECK_QUERY = """
     SELECT uid
     FROM Users
-    WHERE first_name = '{}' AND last_name = '{}' AND phone_number = '{}'
-  """.format(first_name, last_name, phone_number)
+    WHERE phone_number = '{}'
+  """.format(phone_number)
 
   check_for_dup = g.conn.execute(CHECK_QUERY)
 
