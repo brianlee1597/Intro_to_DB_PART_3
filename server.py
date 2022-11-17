@@ -4,6 +4,8 @@ import datetime
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, jsonify, make_response
 from dotenv import load_dotenv
+import string
+import random
 
 load_dotenv()
 
@@ -17,6 +19,10 @@ DATABASEURI = f"postgresql://{s_user}:{s_pass}@34.75.94.195/proj1part2"
 engine = create_engine(DATABASEURI)
 
 print(engine.table_names())
+
+#for CHEQUE_ACCOUNT, CREDIT_CARD
+def str_generator(size, chars=string.ascii_uppercase + string.digits):
+   return ''.join(random.choice(chars) for _ in range(size))
 
 @app.before_request
 def before_request():
@@ -203,6 +209,16 @@ def createprofile():
     INSERT INTO Users(uid, first_name, last_name, phone_number, password)
     VALUES (%s, %s, %s, %s, %s)
   """, uid, first_name, last_name, phone_number, password)
+
+  g.conn.execute("""
+    INSERT INTO Hosts(uid, cheque_account)
+    VALUES(%s, %s)
+  """, uid, str_generator(6))
+
+  g.conn.execute("""
+    INSERT INTO Renters(uid, credit_card)
+    VALUES(%s, %s)
+  """, uid, str_generator(16))
 
   return redirect('/login')
 
