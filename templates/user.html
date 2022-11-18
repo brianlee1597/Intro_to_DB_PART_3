@@ -36,7 +36,19 @@
                 </div>
             </div>
             <div id="right_rentals">
-                
+                <table>
+                    <thead>
+                        <th>Address</th>
+                    </thead>
+                    {% for p in user_props %}
+                    <tr>
+                        <!-- Need to solve the table syntax here -->
+                        <!-- <TD><a href="/calendar?pid=<%= p[4] %>> ">{{p[0] p[1] p[2] p[3]}}</TD> -->
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
             </div>
         </div>
     </div>
@@ -54,8 +66,24 @@
                         <form id="cr_form" method="POST" action="create_rental">
                             <input name="uid" type="text" value="{{user[0]}}" hidden/>
 
-                            Need Inputs Here
+                            <label for="addr">Address:</label><br>
+                            <input type="text" id="addr" name="addr"><br>
+                            <label for="city">City:</label><br>
+                            <input type="text" id="city" name="city"><br>
+                            <label for="state">State:</label><br>
+                            <input type="text" id="state" name="state"><br>
+                            <label for="postal_code">Postal Code:</label><br>
+                            <input type="text" id="postal_code" name="postal_code"><br>
+                            <label for="size">Size:</label><br>
+                            <input type="text" id="size" name="size"><br>
+                            
+                            <br>
+                            <input type="checkbox" id="amenity1" name="amenity1" value="Swimming Pool">
+                            <label for="amenity1"> Swimming Pool</label><br>
+                            <input type="checkbox" id="amenity2" name="amenity2" value="Gym">
+                            <label for="amenity2"> Gym</label><br>
 
+                            <br>
                             <button type="submit">Submit</button>
                         </form>
                     </div>

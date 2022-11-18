@@ -6,6 +6,7 @@ from flask import Flask, request, render_template, g, redirect, Response, jsonif
 from dotenv import load_dotenv
 import string
 import random
+import pandas as pd
 
 load_dotenv()
 
@@ -159,15 +160,30 @@ def user():
     user = []
     for info in user_info:
       user.append(info)
-
-    user_rentals = []
-
-    USER_RENTALS_QUERY = """
-    """
-    # need all user rentals query here, and g.conn.execute to get all rows
+      
+    USER_QUERY.close()
+    
+    # Need all user rentals query here, and g.conn.execute to get all rows
     # which you can for loop it and append it to user_rentals for display.
 
-    return render_template("user.html", user=user, user_rentals=user_rentals)
+    USER_PROP_QUERY = g.conn.execute("""
+      SELECT addr, city, state, postal_code, P.pid from owned_properties P, locates_addresses A
+      WHERE P.uid_host = {} AND A.pid = P.pid
+    """.format(uid))
+    
+    try:
+      prop_info = USER_PROP_QUERY.all()
+      user_props = []
+      for info in prop_info:
+        user_props.append(info)
+        
+      USER_PROP_QUERY.close()
+      
+      return render_template("user.html", user=user, user_props=user_props)
+
+    except:
+        return render_template('405.html')
+
   except:
     return render_template('405.html')
 
@@ -248,13 +264,67 @@ def login_user():
 
 @app.route('/create_rental', methods=['POST'])
 def create_rental():
-  uid = request.form['uid']
+  
+  # will need to distinguish renter and
+  uid_host = request.form['uid']
+  
+  addr = request.form['addr']
+  city = request.form['city']
+  state = request.form['state']
+  postal_code = request.form['postal_code']
+  size = request.form['size']
+  has_swimming_pool = request.form.get('amenity1')
+  has_gym = request.form.get('amenity2')
+  
+  largest_pid = g.conn.execute("""
+    SELECT MAX(pid) as pid
+    FROM Owned_Properties
+  """)
 
-  # need create rental SQL query here and g.conn.execute it
-  # if the database is updated, the redirect page will update the user rental query and display it
-  # no need to send any data back
+  pid = largest_pid.one()['pid']
+  largest_pid.close()
 
-  return redirect('/user?uid=' + uid)
+  pid = int(pid) + 1
+
+  try:
+    g.conn.execute("""
+      INSERT INTO owned_properties(pid, size, uid_host) 
+      VALUES (%s, %s, %s)
+    """, pid, size, uid_host)
+    try:
+      g.conn.execute("""
+        INSERT INTO locates_addresses(addr, city, state, postal_code, pid)
+        VALUES (%s, %s, %s, %s, %s)
+      """, addr, city, state, postal_code, pid)
+    except:
+      g.conn.execute("""
+        DELETE FROM owned_properties WHERE pid = %s
+      """, pid)
+      
+      data = {'message': 'Address filled wrongly or already exists', 'code': 'FAIL'}
+      return make_response(jsonify(data), 401)      
+  except: 
+      data = {'message': 'Size is not valid', 'code': 'FAIL'}
+      return make_response(jsonify(data), 401) 
+    
+  if has_swimming_pool:
+    g.conn.execute("""
+      INSERT INTO equip_amenities(pid, amenity_type) 
+      VALUES (%s, %s)
+    """, pid, 1)
+  if has_gym:
+    g.conn.execute("""
+      INSERT INTO equip_amenities(pid, amenity_type) 
+      VALUES (%s, %s)
+    """, pid, 2) 
+    
+  g.conn.close()
+
+  return redirect('/user?uid=' + uid_host)
+
+@app.route('/calendar', methods=['GET'])
+def calendar():
+  return render_template('calendar.html') 
 
 ########## API ENDPOINTS ##########
 
