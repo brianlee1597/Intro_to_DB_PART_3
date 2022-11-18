@@ -344,6 +344,11 @@ def remove_availability():
 # prop owner should not be able to book his prop, could hide it from public listing of props
 def book():
     return
+  
+@app.route('/history')
+# History page. Intended to put the link in user profile. 
+def history():
+  return render_template('history.html') 
 
 ########## API ENDPOINTS ##########
 
