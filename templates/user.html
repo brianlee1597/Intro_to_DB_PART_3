@@ -61,9 +61,9 @@
 
             if (uid === localStorage.getItem('uid')) {
                 user_info.innerHTML += `
-                    <div class="create_rental">
+                    <div class="create_prop">
                         <h2>Create Rental</h2>
-                        <form id="cr_form" method="POST" action="create_rental">
+                        <form id="cr_form" method="POST" action="create_prop">
                             <input name="uid" type="text" value="{{user[0]}}" hidden/>
 
                             <label for="addr">Address:</label><br>

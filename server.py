@@ -262,8 +262,8 @@ def login_user():
 
   return redirect("/login")
 
-@app.route('/create_rental', methods=['POST'])
-def create_rental():
+@app.route('/create_prop', methods=['POST'])
+def create_prop():
   
   # will need to distinguish renter and
   uid_host = request.form['uid']
