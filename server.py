@@ -329,11 +329,6 @@ def create_prop():
 def calendar():
   return render_template('calendar.html') 
 
-@app.route('/availability')
-# Show ONE calendar outlining current availabilities for a prop
-def availability():
-  return
-
 @app.route('/add_availability', methods=['POST'])
 # will need to know which prop (pid) for host
 def add_availability():
