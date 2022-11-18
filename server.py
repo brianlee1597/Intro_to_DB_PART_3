@@ -322,9 +322,33 @@ def create_prop():
 
   return redirect('/user?uid=' + uid_host)
 
-@app.route('/calendar', methods=['GET'])
+@app.route('/calendar')
+# Calendar page (can choose start date and end date, maybe TWO calendars there)
+# host: can add or remove availabilities
+# renter: can book a specfic time interval, which does not have to match with the exact availabilities eg. a house is spare from day 1 to 5, one can book day 2 to 3. 
 def calendar():
   return render_template('calendar.html') 
+
+@app.route('/availability')
+# Show ONE calendar outlining current availabilities for a prop
+def availability():
+  return
+
+@app.route('/add_availability', methods=['POST'])
+# will need to know which prop (pid) for host
+def add_availability():
+    return
+  
+@app.route('/remove_availability', methods=['POST'])
+# will need to know which prop (pid) for host
+def remove_availability():
+    return
+  
+@app.route('/book', methods=['POST'])
+# will need to know which prop (pid) for renter
+# prop owner should not be able to book his prop, could hide it from public listing of props
+def book():
+    return
 
 ########## API ENDPOINTS ##########
 
