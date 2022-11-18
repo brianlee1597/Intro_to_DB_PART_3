@@ -323,8 +323,8 @@ def create_prop():
   return redirect('/user?uid=' + uid_host)
 
 @app.route('/calendar')
-# Calendar page (can choose start date and end date, maybe TWO calendars there)
-# host: can add or remove availabilities
+# Calendar page (can choose start date and end date, maybe TWO calendars there). Need to darken unavailable dates. 
+# host: can add or remove availabilitiess to match with the exact availabilities eg. a house is spare from day 1 to 5, one can book day 2 to 3. 
 # renter: can book a specfic time interval, which does not have to match with the exact availabilities eg. a house is spare from day 1 to 5, one can book day 2 to 3. 
 def calendar():
   return render_template('calendar.html') 
