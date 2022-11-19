@@ -36,17 +36,118 @@
                 </div>
             </div>
             <div id="right_rentals">
-                <table>
-                    <thead>
-                        <th>Address</th>
-                    </thead>
-                    {% for p in user_props %}
-                    <tr>
-                        <!-- Need to solve the table syntax here -->
-                        <!-- <TD><a href="/calendar?pid=<%= p[4] %>> ">{{p[0] p[1] p[2] p[3]}}</TD> -->
-                    </tr>
+                <div class="user_rentals">
+                    <h3>Properties: </h3>
+                    {% for prop in user_props %}
+                        <div onclick="openModal('{{prop[4]}}')" class="rentals">
+                            <h5>
+                                <span>Address: </span>
+                                <span>{{prop[0]}}</span>
+                            </h5>
+                            <h5>
+                                <span>City: </span>
+                                <span>{{prop[1]}}</span>
+                            </h5>
+                            <h5>
+                                <span>State: </span>
+                                <span>{{prop[2]}}</span>
+                            </h5>
+                            <h5>
+                                <span>Postal Code: </span>
+                                <span>{{prop[3]}}</span>
+                            </h5>
+                            <h5>
+                                <span>PID: </span>
+                                <span>{{prop[4]}}</span>
+                            </h5>
+                        </div>
+
+                        <div id="{{prop[4]}}" class="modal">                    
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                              <span onclick="closeModal('{{prop[4]}}')" class="close">&times;</span>
+                              <h3>Property Information: <span onclick="deleteProp('{{prop[4]}}')" class="delete">Delete Property</span> </h3>
+                              <form  class="prop_info" method="POST" action="/update_availability">
+                                <input type="text" name="pid" value="{{prop[4]}}" hidden/>
+                                <input type="text" name="uid" value="{{user[0]}}" hidden/>
+                                <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
+                                <div class="available">
+                                    <div>
+                                        <h4>Current Availability: </h4>
+                                        <h5>
+                                            <span>Start: </span>
+                                            <span>{{prop[5]}}</span>
+                                        </h5>
+                                        <h5>
+                                            <span>End: </span>
+                                            <span>{{prop[6]}}</span>
+                                        </h5>
+                                    </div>
+                                    <div>
+                                        <h4>New Availability: </h4>
+                                        <h5>
+                                            <span>Start: </span>
+                                            <input name="start_from" type="date" required/>
+                                        </h5>
+                                        <h5>
+                                            <span>End: </span>
+                                            <input name="end_at" type="date" required/>
+                                        </h5>
+                                    </div>
+                                </div>
+                                <button type="submit" class="update_avail">Update</button>
+                              </form>
+                            </div>
+                        
+                        </div>
+
+                        <div id="{{prop[4]}}_2" class="modal">                    
+
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                              <span onclick="closeModal('{{prop[4]}}')" class="close2">&times;</span>
+                              <h3>Property Information: </h3>
+                              <form  class="prop_info" method="POST" action="/update_availability">
+                                <input type="text" name="pid" value="{{prop[4]}}" hidden/>
+                                <input type="text" name="uid" value="{{user[0]}}" hidden/>
+                                <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
+                                <div class="available">
+                                    <div>
+                                        <h4>Availability: </h4>
+                                        <h5>
+                                            <span>Start: </span>
+                                            <span>{{prop[5]}}</span>
+                                        </h5>
+                                        <h5>
+                                            <span>End: </span>
+                                            <span>{{prop[6]}}</span>
+                                        </h5>
+                                    </div>
+                                    <div>
+                                        <h4>Rent From - To: </h4>
+                                        <h5>
+                                            <span>Start: </span>
+                                            <input name="start_from" type="date" required/>
+                                        </h5>
+                                        <h5>
+                                            <span>End: </span>
+                                            <input name="end_at" type="date" required/>
+                                        </h5>
+                                    </div>
+                                </div>
+                                <button type="submit" class="update_avail">Update</button>
+                              </form>
+                            </div>
+                        
+                        </div>
                     {% endfor %}
-                </table>
+                </div>
+                <div class="user_history">
+                    <h3>History: </h3>
+                    {%for rec in record%}
+                        <h1>{{rec}}</h1>
+                    {%endfor%}
+                </div>
             </div>
         </div>
             </div>
@@ -54,6 +155,19 @@
     </div>
 
     <script>
+        function deleteProp(pid) {
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function () {
+                if(this.readyState == 4 && this.status == 200) {
+                    window.location.reload();
+                }
+            }
+
+            req.open('POST', '/delete_prop', true);
+            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            req.send(`pid=${pid}`);
+        }
+
         const uid = '{{user[0]}}';
         
         window.addEventListener('load', () => {
@@ -67,15 +181,67 @@
                             <input name="uid" type="text" value="{{user[0]}}" hidden/>
 
                             <label for="addr">Address:</label><br>
-                            <input type="text" id="addr" name="addr"><br>
+                            <input type="text" id="addr" name="addr" required><br>
                             <label for="city">City:</label><br>
-                            <input type="text" id="city" name="city"><br>
+                            <input type="text" id="city" name="city" required><br>
                             <label for="state">State:</label><br>
-                            <input type="text" id="state" name="state"><br>
+                            <select name="state" required>
+                            	<option value="AL">AL</option>
+                            	<option value="AK">AK</option>
+                            	<option value="AR">AR</option>
+                            	<option value="AZ">AZ</option>
+                            	<option value="CA">CA</option>
+                            	<option value="CO">CO</option>
+                            	<option value="CT">CT</option>
+                            	<option value="DC">DC</option>
+                            	<option value="DE">DE</option>
+                            	<option value="FL">FL</option>
+                            	<option value="GA">GA</option>
+                            	<option value="HI">HI</option>
+                            	<option value="IA">IA</option>
+                            	<option value="ID">ID</option>
+                            	<option value="IL">IL</option>
+                            	<option value="IN">IN</option>
+                            	<option value="KS">KS</option>
+                            	<option value="KY">KY</option>
+                            	<option value="LA">LA</option>
+                            	<option value="MA">MA</option>
+                            	<option value="MD">MD</option>
+                            	<option value="ME">ME</option>
+                            	<option value="MI">MI</option>
+                            	<option value="MN">MN</option>
+                            	<option value="MO">MO</option>
+                            	<option value="MS">MS</option>
+                            	<option value="MT">MT</option>
+                            	<option value="NC">NC</option>
+                            	<option value="NE">NE</option>
+                            	<option value="NH">NH</option>
+                            	<option value="NJ">NJ</option>
+                            	<option value="NM">NM</option>
+                            	<option value="NV">NV</option>
+                            	<option value="NY">NY</option>
+                            	<option value="ND">ND</option>
+                            	<option value="OH">OH</option>
+                            	<option value="OK">OK</option>
+                            	<option value="OR">OR</option>
+                            	<option value="PA">PA</option>
+                            	<option value="RI">RI</option>
+                            	<option value="SC">SC</option>
+                            	<option value="SD">SD</option>
+                            	<option value="TN">TN</option>
+                            	<option value="TX">TX</option>
+                            	<option value="UT">UT</option>
+                            	<option value="VT">VT</option>
+                            	<option value="VA">VA</option>
+                            	<option value="WA">WA</option>
+                            	<option value="WI">WI</option>
+                            	<option value="WV">WV</option>
+                            	<option value="WY">WY</option>
+                            </select>
                             <label for="postal_code">Postal Code:</label><br>
-                            <input type="text" id="postal_code" name="postal_code"><br>
+                            <input type="text" id="postal_code" name="postal_code" required><br>
                             <label for="size">Size:</label><br>
-                            <input type="text" id="size" name="size"><br>
+                            <input type="text" id="size" name="size" required><br>
                             
                             <br>
                             <input type="checkbox" id="amenity1" name="amenity1" value="Swimming Pool">
@@ -90,6 +256,18 @@
                 `
             }
         })
+        
+        function openModal (pid) {
+            pid = uid === localStorage.getItem('uid') ? pid : `${pid}_2`;
+            var modal = document.getElementById(pid);
+            modal.style.display = "block";
+        }       
+        
+        function closeModal (pid)  {
+            pid = uid === localStorage.getItem('uid') ? pid : `${pid}_2`;
+            var modal = document.getElementById(pid);
+            modal.style.display = "none";
+        }       
     </script>
     {% endblock %}
     

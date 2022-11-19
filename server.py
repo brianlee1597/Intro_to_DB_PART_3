@@ -6,7 +6,7 @@ from flask import Flask, request, render_template, g, redirect, Response, jsonif
 from dotenv import load_dotenv
 import string
 import random
-import pandas as pd
+import logging
 
 load_dotenv()
 
@@ -162,15 +162,28 @@ def user():
       user.append(info)
       
     USER_QUERY.close()
-    
-    # Need all user rentals query here, and g.conn.execute to get all rows
-    # which you can for loop it and append it to user_rentals for display.
 
     USER_PROP_QUERY = g.conn.execute("""
-      SELECT addr, city, state, postal_code, P.pid from owned_properties P, locates_addresses A
-      WHERE P.uid_host = {} AND A.pid = P.pid
-    """.format(uid))
-    
+      SELECT DISTINCT ON(U.pid) U.addr, U.city, U.state, U.postal_code, U.pid, R.start_date, R.end_date
+      FROM (
+        SELECT addr, city, state, postal_code, P.pid as pid
+        FROM owned_properties P, locates_addresses A
+        WHERE P.uid_host = {} AND A.pid = P.pid
+      ) as U 
+      FULL OUTER JOIN (
+        SELECT P.pid as pid, I.start_date as start_date, I.end_date as end_date
+        FROM owned_properties P, is_available I
+        WHERE P.uid_host = {} AND I.pid = P.pid
+      ) as R 
+      ON U.pid = R.pid
+    """.format(uid, uid))
+
+    RECORD_QUERY = g.conn.execute("""
+      SELECT * 
+      FROM record
+      WHERE uid_host = %s
+    """, uid)
+
     try:
       prop_info = USER_PROP_QUERY.all()
       user_props = []
@@ -178,13 +191,19 @@ def user():
         user_props.append(info)
         
       USER_PROP_QUERY.close()
-      
-      return render_template("user.html", user=user, user_props=user_props)
+
+      record = []
+      for rec in RECORD_QUERY:
+        record.append(rec)
+
+      return render_template("user.html", user=user, user_props=user_props, record=record)
 
     except:
-        return render_template('405.html')
+      logging.exception("")
+      return render_template('405.html')
 
   except:
+    logging.exception('')
     return render_template('405.html')
 
 ########## URIS ##########
@@ -304,6 +323,7 @@ def create_prop():
       data = {'message': 'Address filled wrongly or already exists', 'code': 'FAIL'}
       return make_response(jsonify(data), 401)      
   except: 
+      logging.exception('')
       data = {'message': 'Size is not valid', 'code': 'FAIL'}
       return make_response(jsonify(data), 401) 
     
@@ -329,15 +349,43 @@ def create_prop():
 def calendar():
   return render_template('calendar.html') 
 
-@app.route('/add_availability', methods=['POST'])
+@app.route('/delete_prop', methods=['POST'])
+def delete_prop():
+  pid = request.form['pid']
+
+  g.conn.execute("""
+    DELETE FROM locates_addresses WHERE pid = %s
+  """, pid)
+
+  g.conn.execute("""
+    DELETE FROM is_available WHERE pid = %s
+  """, pid)
+
+  g.conn.execute("""
+    DELETE FROM owned_properties WHERE pid = %s
+  """, pid)
+
+  data = {'message': 'delete successful', 'code': 'SUCCESS'}
+  return make_response(jsonify(data), 200)   
+
+@app.route('/update_availability', methods=['POST'])
 # will need to know which prop (pid) for host
 def add_availability():
-    return
+  uid = request.form.get("uid")
+  pid = request.form.get("pid")
+  start_from = request.form.get("start_from")
+  end_at = request.form.get("end_at")
+
+  g.conn.execute("""
+    INSERT INTO is_available (pid, start_date, end_date)
+    VALUES (%s, %s, %s)
+  """, pid, start_from, end_at)
+  redirect('/user?uid=' + uid)
   
 @app.route('/remove_availability', methods=['POST'])
 # will need to know which prop (pid) for host
 def remove_availability():
-    return
+  return
   
 @app.route('/book', methods=['POST'])
 # will need to know which prop (pid) for renter
