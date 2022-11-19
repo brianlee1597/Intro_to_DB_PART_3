@@ -189,3 +189,23 @@
     gap: 25px;
     padding: 2.5px 0;
   }
+
+.avail_rows {
+  max-height: 100px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avail_rows > .inner {
+  cursor: pointer;
+  text-align: center;
+  background-color: lightpink;
+  padding: 10px 0;
+  border-radius: 25px;
+} 
+
+.avail_rows > .inner h5 {
+  margin: 0;
+}
