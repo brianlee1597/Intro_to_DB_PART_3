@@ -365,25 +365,19 @@ def delete_prop():
 @app.route('/add_availability')
 # will need to know which prop (pid) for host
 def add_availability():
-  # uid = request.form.get("uid")
-  pid = request.form.get("pid")
+  pid = request.form.get("pid")  
   start_from = request.form.get("start_from")
   end_at = request.form.get("end_at")
   
+  # Placeholder to be removed 
   pid = 10
   start_from = "2022-03-01"
   end_at = "2022-12-10"
 
-  AVAILABILITY_BY_PID =  g.conn.execute(
-    """
-    SELECT start_date, end_date
-    FROM is_available
-    WHERE pid = '{}' ORDER BY start_date, end_date
-    """.format(pid))
-
   start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
   end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
-  current_availability = AVAILABILITY_BY_PID.all()
+  
+  current_availability = get_curr_availability(pid)
   tmp = list(map(list, current_availability))
   tmp.append([start_from, end_at])
 
@@ -453,7 +447,6 @@ def add_availability_helper(intervals):
   return res
 
 def remove_availability_helper(intervals, target):
-  
   res = []
   left, right = target
     
@@ -477,6 +470,17 @@ def modify_availability(intervals, pid):
       INSERT INTO is_available(start_date, end_date, pid)
       VALUES (%s, %s, %s)
     """, start_date, end_date, pid)
+    
+def get_curr_availability(pid):
+  AVAILABILITY_BY_PID =  g.conn.execute(
+    """
+    SELECT start_date, end_date
+    FROM is_available
+    WHERE pid = '{}' ORDER BY start_date, end_date
+    """.format(pid))
+  
+  return AVAILABILITY_BY_PID.all()
+
     
     
 ########## API ENDPOINTS ##########
