@@ -10,7 +10,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 25px;
     height: calc(100vh - 300px);
-    border: 1px solid black;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     padding: 25px;
     max-height: 600px;
 }
@@ -52,12 +53,9 @@
     cursor: default;
 }
 
-.create_prop {
-    border: 1px solid black;
-}
-
 #right_rentals {
-    border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     display: grid;
     grid-template-rows: 1fr 1fr;
     max-height: 600px;
@@ -171,4 +169,23 @@
     text-decoration: underline;
     cursor: pointer;
     margin-left: 250px;
+  }
+
+  .user_history {
+    padding: 0 25px;
+    max-height: 300px;
+    overflow: scroll;
+  }
+
+  #cr_form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form_row {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    padding: 2.5px 0;
   }
