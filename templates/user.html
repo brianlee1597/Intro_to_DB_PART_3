@@ -285,6 +285,9 @@
             pid = uid === localStorage.getItem('uid') ? pid : `${pid}_2`;
             var modal = document.getElementById(pid);
             modal.style.display = "none";
+
+            const rows = document.getElementById("avail_rows_" + pid);
+            rows.innerHTML = "";
         }       
 
         async function get(url) {
