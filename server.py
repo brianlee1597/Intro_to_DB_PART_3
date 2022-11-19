@@ -395,25 +395,51 @@ def add_availability():
   
   # redirect('/user?uid=' + uid)
   
-@app.route('/remove_availability', methods=['POST'])
+@app.route('/remove_availability')
 # will need to know which prop (pid) for host
 def remove_availability():
-  uid = request.form.get("uid")
-  redirect('/user?uid=' + uid)
+  pid = request.form.get("pid")  
+  start_from = request.form.get("start_from")
+  end_at = request.form.get("end_at")
+  
+  # Placeholder to be removed 
+  pid = 10
+  start_from = "2022-03-01"
+  end_at = "2022-12-10"
+
+  start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
+  end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
+  
+  current_availability = get_curr_availability(pid)
+  tmp = list(map(list, current_availability))
+
+  new_availability = remove_availability_helper(tmp, [start_from, end_at])
+  current_availability = list(map(list, current_availability))
+  
+  # check if user input actually change the current_availability
+  if new_availability == current_availability:
+    data = {'message': ' remove availability fail: invalid input', 'code': 'FAIL'}
+    return make_response(jsonify(data), 200)   
+  else:    
+    modify_availability(new_availability, pid)
+    data = {'message': ' remove availability successful', 'code': 'SUCCESS'}
+    return make_response(jsonify(data), 200)   
+  
+  # redirect('/user?uid=' + uid)
   
 @app.route('/book', methods=['POST'])
 # will need to know which prop (pid) for renter
 # prop owner should not be able to book his prop, could hide it from public listing of props
 def book():
-    # largest_transcation_id = g.conn.execute("""
-    #   SELECT MAX(transcation_id) as transcation_id
-    #   FROM record
-    # """)
+  largest_transcation_id = g.conn.execute("""
+    SELECT MAX(transcation_id) as transcation_id
+    FROM record
+  """)
 
-    # transcation_id = largest_transcation_id.one()['pid']
-    # transcation_id.close()
+  transcation_id = largest_transcation_id.one()['pid']
+  transcation_id.close()
 
-    # transcation_id = int(transcation_id) + 1
+  transcation_id = int(transcation_id) + 1
   
     # # TODO: check if this is the right call for clicked host uid
     # uid_host = request.args.get('uid')
@@ -471,6 +497,8 @@ def modify_availability(intervals, pid):
       VALUES (%s, %s, %s)
     """, start_date, end_date, pid)
     
+  g.conn.close()
+    
 def get_curr_availability(pid):
   AVAILABILITY_BY_PID =  g.conn.execute(
     """
@@ -479,7 +507,9 @@ def get_curr_availability(pid):
     WHERE pid = '{}' ORDER BY start_date, end_date
     """.format(pid))
   
-  return AVAILABILITY_BY_PID.all()
+  res = AVAILABILITY_BY_PID.all()
+  AVAILABILITY_BY_PID.close()
+  return res
 
     
     
