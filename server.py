@@ -359,20 +359,19 @@ def create_prop():
 def delete_prop():
   pid = request.form['pid']
 
-  g.conn.execute("""
-    DELETE FROM locates_addresses WHERE pid = %s
-  """, pid)
+  # Need show response msg on front end 
 
-  g.conn.execute("""
-    DELETE FROM is_available WHERE pid = %s
-  """, pid)
-
-  g.conn.execute("""
-    DELETE FROM owned_properties WHERE pid = %s
-  """, pid)
-
-  data = {'message': 'delete successful', 'code': 'SUCCESS'}
-  return make_response(jsonify(data), 200)   
+  try: 
+    g.conn.execute("""
+      DELETE FROM owned_properties WHERE pid = %s
+    """, pid)
+    data = {'message': 'delete prop successful', 'code': 'SUCCESS'}
+    return make_response(jsonify(data), 200)  
+  
+  except:
+    data = {'message': 'delete prop fail: since it has been rented to someone', 'code': 'FAIL'}
+    return make_response(jsonify(data), 200)  
+     
 
 @app.route('/add_availability', methods=["POST"])
 # will need to know which prop (pid) for host
