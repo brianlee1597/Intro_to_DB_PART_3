@@ -53,6 +53,12 @@
                         {% endfor %}
                     </select>
                 </label>
+                <div class="form_row">
+                    <input type="checkbox" id="amenity1" name="amenity1" value="1">
+                    <label for="amenity1"> Swimming Pool</label>
+                    <input type="checkbox" id="amenity2" name="amenity2" value="1">
+                    <label for="amenity2"> Gym</label>
+                </div>
             </div>
             <button onclick="refresh()">Submit</button>
         </div>
@@ -68,13 +74,17 @@
                     <span>{{rental[0]}}</span>
                   </h6>
                   <h6>
+                    <span>Address:</span>
+                    <span>{{rental[7]}}, {{rental[8]}}, {{rental[9]}}</span>
+                  </h6>
+                  <h6>
                     <span>Property Size:</span>
                     <span>{{rental[1]}}</span>
                   </h6>
                   <a class="owned_link" href="/user?uid={{rental[2]}}">
                     <h6 class="owned">
-                      <span>Owned By (User ID):</span>
-                      <span>{{rental[2]}}</span>
+                        <span>Owned By:</span>
+                        <span>{{rental[5]}} {{rental[6]}} (User ID: {{rental[2]}})</span>
                     </h6>
                   </a>
                 </div>
@@ -202,8 +212,10 @@
             const end_at = document.getElementById("end_at").value;
             const order_by = document.getElementById("order_by").value;
             const sort_by = document.getElementById("sort_by").value;
+            var amenity1 = document.getElementById("amenity1").checked; 
+            var amenity2 = document.getElementById("amenity2").checked; 
 
-            const url = `/rentals?from=${start_from}&to=${end_at}&order_by=${order_by}&sort_by=${sort_by}`;
+            const url = `/rentals?from=${start_from}&to=${end_at}&order_by=${order_by}&sort_by=${sort_by}&amenity1=${amenity1}&amenity2=${amenity2}`;
             window.location = url;
         }
 

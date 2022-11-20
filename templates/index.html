@@ -29,13 +29,17 @@
                 <span>{{rental[0]}}</span>
               </h6>
               <h6>
+                <span>Address:</span>
+                <span>{{rental[7]}}, {{rental[8]}}, {{rental[9]}}</span>
+              </h6>
+              <h6>
                 <span>Size:</span>
                 <span>{{rental[1]}}</span>
               </h6>
               <a class="owned_link" href="/user?uid={{rental[2]}}">
                 <h6 class="owned">
-                  <span>Owned By (User ID):</span>
-                  <span>{{rental[2]}}</span>
+                  <span>Owned By:</span>
+                  <span>{{rental[5]}} {{rental[6]}} (User ID: {{rental[2]}})</span>
                 </h6>
               </a>
             </div>
