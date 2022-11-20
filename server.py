@@ -410,11 +410,6 @@ def remove_availability():
   start_from = request.form.get("start_from")
   end_at = request.form.get("end_at")
   
-  # Placeholder to be removed 
-  pid = 10
-  start_from = "2022-03-01"
-  end_at = "2022-12-10"
-
   start_from = datetime.strptime(start_from, '%a, %d %b %Y %H:%M:%S %Z').date()
   end_at = datetime.strptime(end_at, '%a, %d %b %Y %H:%M:%S %Z').date()
   
