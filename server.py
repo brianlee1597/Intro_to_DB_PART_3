@@ -2,7 +2,7 @@ import os
 from sqlalchemy import *
 import datetime
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, jsonify, make_response
+from flask import Flask, request, render_template, g, redirect, Response, jsonify, make_response, after_this_request
 from dotenv import load_dotenv
 import string
 import random
@@ -165,19 +165,13 @@ def user():
     USER_QUERY.close()
 
     USER_PROP_QUERY = g.conn.execute("""
-      SELECT DISTINCT ON(U.pid) U.addr, U.city, U.state, U.postal_code, U.pid, R.start_date, R.end_date
+      SELECT U.addr, U.city, U.state, U.postal_code, U.pid
       FROM (
         SELECT addr, city, state, postal_code, P.pid as pid
         FROM owned_properties P, locates_addresses A
         WHERE P.uid_host = {} AND A.pid = P.pid
-      ) as U 
-      FULL OUTER JOIN (
-        SELECT P.pid as pid, I.start_date as start_date, I.end_date as end_date
-        FROM owned_properties P, is_available I
-        WHERE P.uid_host = {} AND I.pid = P.pid
-      ) as R 
-      ON U.pid = R.pid
-    """.format(uid, uid))
+      ) as U
+    """.format(uid))
 
     RECORD_QUERY = g.conn.execute("""
       SELECT * 
@@ -210,6 +204,24 @@ def user():
 ########## URIS ##########
 
 ########## API ENDPOINTS ##########
+
+@app.route('/available_times', methods=['GET'])
+def available_times():
+  try:
+    pid = request.args.get('pid')
+
+    current_availability = get_curr_availability(pid)
+    tmp = list(map(list, current_availability))
+
+    print(tmp)
+
+    data = {'message': 'TIMES FETCHED', 'code': 'SUCCESS', 'times': tmp}
+    print(data)
+    return make_response(jsonify(data), 200)
+  except:
+    logging.exception("")
+    data = {'message': 'FAILED FETCH', 'code': 'FAIL'}
+    return make_response(jsonify(data), 404)
 
 @app.route('/create_profile', methods=['POST'])
 def createprofile():
@@ -362,17 +374,12 @@ def delete_prop():
   data = {'message': 'delete successful', 'code': 'SUCCESS'}
   return make_response(jsonify(data), 200)   
 
-@app.route('/add_availability')
+@app.route('/add_availability', methods=["POST"])
 # will need to know which prop (pid) for host
 def add_availability():
   pid = request.form.get("pid")  
   start_from = request.form.get("start_from")
   end_at = request.form.get("end_at")
-  
-  # Placeholder to be removed 
-  pid = 10
-  start_from = "2022-03-01"
-  end_at = "2022-12-10"
 
   start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
   end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
@@ -396,7 +403,7 @@ def add_availability():
   
   # redirect('/user?uid=' + uid)
   
-@app.route('/remove_availability')
+@app.route('/remove_availability', methods=['POST'])
 # will need to know which prop (pid) for host
 def remove_availability():
   pid = request.form.get("pid")  
