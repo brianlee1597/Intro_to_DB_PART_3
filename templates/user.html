@@ -101,7 +101,7 @@
                             <div class="modal-content">
                               <span onclick="closeModal('{{prop[4]}}')" class="close2">&times;</span>
                               <h3>Property Information: </h3>
-                                <div  class="prop_info">
+                                <div class="prop_info">
                                     <input type="text" name="pid" value="{{prop[4]}}" hidden/>
                                     <input type="text" name="uid" value="{{user[0]}}" hidden/>
                                     <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
@@ -115,15 +115,15 @@
                                             <h4>Rent From - To: </h4>
                                             <h5>
                                                 <span>Start: </span>
-                                                <input name="start_from" type="date" required/>
+                                                <input id="start_from_{{prop[4]}}" name="start_from" type="date"/>
                                             </h5>
                                             <h5>
                                                 <span>End: </span>
-                                                <input name="end_at" type="date" required/>
+                                                <input id="end_at_{{prop[4]}}" name="end_at" type="date"/>
                                             </h5>
                                         </div>
                                     </div>
-                                    <button class="update_avail">Book</button>
+                                    <button onclick="book('{{prop[4]}}', '{{user[0]}}')" class="update_avail">Book</button>
                                 </div>
                             </div>
                         
@@ -143,6 +143,33 @@
     </div>
 
     <script>
+        function book (pid, uid) {
+            const uid_renter = localStorage.getItem("uid");
+            if (!uid_renter) {
+                alert("Please log in first");
+                return;
+            }
+
+            const start_from = document.getElementById("start_from_" + pid).value;
+            const end_at = document.getElementById("end_at_" + pid).value;
+
+            if (!start_from || !end_at) {
+                alert("Please input a start-end time");
+                return;
+            }
+
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function () {
+                if(this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                }
+            }
+
+            req.open('POST', '/book', true);
+            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            req.send(`pid=${pid}&uid_host=${uid}&uid_renter=${uid_renter}&start_from=${start_from}&end_at=${end_at}`);
+        }
+
         function deleteProp(pid) {
             var req = new XMLHttpRequest();
             req.onreadystatechange = function () {

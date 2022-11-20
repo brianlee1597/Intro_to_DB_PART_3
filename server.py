@@ -431,7 +431,7 @@ def remove_availability():
   
   # redirect('/user?uid=' + uid)
   
-@app.route('/book')
+@app.route('/book', methods=["POST"])
 # will need to know which prop (pid) for renter
 # prop owner should not be able to book his prop, could hide it from public listing of props
 def book():
@@ -444,19 +444,13 @@ def book():
   largest_transcation_id.close()
   transcation_id = int(transcation_id) + 1
   
-  # TODO: NEED help to get these uids correctly
-  uid_host = request.args.get('uid')
-  uid_renter = request.form.get("uid")
+  uid_host = request.form.get('uid_host')
+  uid_renter = request.form.get("uid_renter")
   pid = request.form.get("pid")  
   start_from = request.form.get("start_from")
   end_at = request.form.get("end_at")
-  
-  # Placeholder to be removed 
-  uid_host = 10
-  uid_renter = 24
-  pid = 10
-  start_from = "2022-03-01"
-  end_at = "2022-03-10"
+
+  print(uid_host, uid_renter, pid, start_from, end_at)
     
   # check for legit book
   CAN_BOOK =  g.conn.execute(
