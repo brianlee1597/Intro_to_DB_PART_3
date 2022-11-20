@@ -397,6 +397,7 @@ def add_availability():
     return make_response(jsonify(data), 200)   
   else:    
     modify_availability(new_availability, pid)
+    g.conn.close()
     data = {'message': ' update availability successful', 'code': 'SUCCESS'}
     return make_response(jsonify(data), 200)   
   
@@ -409,13 +410,8 @@ def remove_availability():
   start_from = request.form.get("start_from")
   end_at = request.form.get("end_at")
   
-  # Placeholder to be removed 
-  pid = 10
-  start_from = "2022-03-01"
-  end_at = "2022-12-10"
-
-  start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
-  end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
+  start_from = datetime.strptime(start_from, '%a, %d %b %Y %H:%M:%S %Z').date()
+  end_at = datetime.strptime(end_at, '%a, %d %b %Y %H:%M:%S %Z').date()
   
   current_availability = get_curr_availability(pid)
   tmp = list(map(list, current_availability))
@@ -429,12 +425,13 @@ def remove_availability():
     return make_response(jsonify(data), 200)   
   else:    
     modify_availability(new_availability, pid)
+    g.conn.close()
     data = {'message': ' remove availability successful', 'code': 'SUCCESS'}
     return make_response(jsonify(data), 200)   
   
   # redirect('/user?uid=' + uid)
   
-@app.route('/book', methods=['POST'])
+@app.route('/book')
 # will need to know which prop (pid) for renter
 # prop owner should not be able to book his prop, could hide it from public listing of props
 def book():
@@ -443,32 +440,70 @@ def book():
     FROM record
   """)
 
-  transcation_id = largest_transcation_id.one()['pid']
-  transcation_id.close()
-
+  transcation_id = largest_transcation_id.one()['transcation_id']
+  largest_transcation_id.close()
   transcation_id = int(transcation_id) + 1
   
-    # # TODO: check if this is the right call for clicked host uid
-    # uid_host = request.args.get('uid')
-    # uid_renter = request.form.get("uid")
-    # pid = request.form.get("pid")
-    # from_date = request.form.get("start_from")
-    # to_date = request.form.get("end_at")
+  # TODO: NEED help to get these uids correctly
+  uid_host = request.args.get('uid')
+  uid_renter = request.form.get("uid")
+  pid = request.form.get("pid")  
+  start_from = request.form.get("start_from")
+  end_at = request.form.get("end_at")
+  
+  # Placeholder to be removed 
+  uid_host = 10
+  uid_renter = 24
+  pid = 10
+  start_from = "2022-03-01"
+  end_at = "2022-03-10"
     
-    # # g.conn.execute("""
-    # #   INSERT INTO rent_to (uid_host, uid_renter, pid)
-    # #   VALUES (%s, %s, %s)
-    # # """, uid_host, uid_renter, pid)
+  # check for legit book
+  CAN_BOOK =  g.conn.execute(
+    """
+    SELECT start_date, end_date
+    FROM is_available
+    WHERE pid = '{}' AND start_date <= '{}' AND '{}' <= end_date
+    """.format(pid, start_from, end_at))
+  between_interval = CAN_BOOK.all()
+  CAN_BOOK.close()
+  
+  if len(between_interval) != 1:
+    data = {'message': ' booking fail: invalid input or wrong data insertion in DB before', 'code': 'FAIL'}
+    return make_response(jsonify(data), 200)   
     
-    # # g.conn.execute("""
-    # #   INSERT INTO record (uid_host, uid_renter, pid, transcation_id, from_date, to_date)
-    # #   VALUES (%s, %s, %s, %s, %s, %s)
-    # # """, uid_host, uid_renter, pid, transcation_id, from_date, to_date)
+  # remove logic like above
+  start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
+  end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
+  
+  current_availability = get_curr_availability(pid)
+  tmp = list(map(list, current_availability))
+
+  new_availability = remove_availability_helper(tmp, [start_from, end_at])
+  current_availability = list(map(list, current_availability))
+  
+  # check if user input actually change the current_availability
+  if new_availability == current_availability:
+    data = {'message': ' booking fail: invalid input or wrong data insertion in DB before', 'code': 'FAIL'}
+    return make_response(jsonify(data), 200)
+  else:
+    modify_availability(new_availability, pid)
     
-    # # # TODO: update on is_avaible and calendar here... will sort this out after other avability-related functions
-    # # g.conn.close()
-    
-  return redirect('/')
+  g.conn.execute("""
+    INSERT INTO rent_to (uid_host, uid_renter, pid)
+    VALUES (%s, %s, %s)
+  """, uid_host, uid_renter, pid)
+  
+  g.conn.execute("""
+    INSERT INTO record (uid_host, uid_renter, pid, transcation_id, from_date, to_date)
+    VALUES (%s, %s, %s, %s, %s, %s)
+  """, uid_host, uid_renter, pid, transcation_id, start_from, end_at)
+  
+  g.conn.close()
+  
+  data = {'message': ' BOOK successful', 'code': 'SUCCESS'}
+  return make_response(jsonify(data), 200)       
+  # return redirect('/')
       
 def add_availability_helper(intervals):
   res = []
@@ -480,17 +515,8 @@ def add_availability_helper(intervals):
   return res
 
 def remove_availability_helper(intervals, target):
-  res = []
   left, right = target
-    
-  for start, end in intervals:
-    if start < left: 
-      res.append([start, min(end, left)])
-      
-    if end > right:
-        res.append([max(start, right), end])
-    
-  return res
+  return [[x, y] for a, b in intervals for x, y in ((a, min(b, left)), (max(a, right), b)) if x < y]
 
 def modify_availability(intervals, pid):
   g.conn.execute(
@@ -504,7 +530,7 @@ def modify_availability(intervals, pid):
       VALUES (%s, %s, %s)
     """, start_date, end_date, pid)
     
-  g.conn.close()
+  # g.conn.close()
     
 def get_curr_availability(pid):
   AVAILABILITY_BY_PID =  g.conn.execute(
