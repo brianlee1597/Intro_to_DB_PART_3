@@ -176,7 +176,7 @@ def user():
     RECORD_QUERY = g.conn.execute("""
       SELECT * 
       FROM record
-      WHERE uid_host = %s
+      WHERE uid_renter = %s
     """, uid)
 
     try:
