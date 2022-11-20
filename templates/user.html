@@ -101,30 +101,30 @@
                             <div class="modal-content">
                               <span onclick="closeModal('{{prop[4]}}')" class="close2">&times;</span>
                               <h3>Property Information: </h3>
-                              <form  class="prop_info" method="POST" action="/update_availability">
-                                <input type="text" name="pid" value="{{prop[4]}}" hidden/>
-                                <input type="text" name="uid" value="{{user[0]}}" hidden/>
-                                <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
-                                <div class="available">
-                                    <div>
-                                        <h4>Availability: </h4>
-                                        <div id="avail_rows" class="avail_rows">
+                                <div  class="prop_info">
+                                    <input type="text" name="pid" value="{{prop[4]}}" hidden/>
+                                    <input type="text" name="uid" value="{{user[0]}}" hidden/>
+                                    <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
+                                    <div class="available">
+                                        <div>
+                                            <h4>Availability: </h4>
+                                            <div id="avail_rows_{{prop[4]}}_2" class="avail_rows">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4>Rent From - To: </h4>
+                                            <h5>
+                                                <span>Start: </span>
+                                                <input name="start_from" type="date" required/>
+                                            </h5>
+                                            <h5>
+                                                <span>End: </span>
+                                                <input name="end_at" type="date" required/>
+                                            </h5>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h4>Rent From - To: </h4>
-                                        <h5>
-                                            <span>Start: </span>
-                                            <input name="start_from" type="date" required/>
-                                        </h5>
-                                        <h5>
-                                            <span>End: </span>
-                                            <input name="end_at" type="date" required/>
-                                        </h5>
-                                    </div>
+                                    <button class="update_avail">Book</button>
                                 </div>
-                                <button type="submit" class="update_avail">Update</button>
-                              </form>
                             </div>
                         
                         </div>
@@ -262,7 +262,7 @@
             var modal = document.getElementById(pid);
             modal.style.display = "block";
 
-            const {times} = await get(`/available_times?pid=${pid}`);
+            const {times} = await get(`/available_times?pid=${pid.replace("_2", "")}`);
             const rows = document.getElementById("avail_rows_" + pid);
             
             for (let i = 0; i < times.length; i++) {
@@ -278,7 +278,7 @@
                                 <span>${refactor(times[i][1])}</span>
                             </h5>
                         </div>
-                        <button onclick="removeAvail('${pid}','${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>
+                        ${pid.includes("_2") ? "" : `<button onclick="removeAvail('${pid}','${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>`}
                     </div>
                 `
             }
