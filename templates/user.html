@@ -67,7 +67,7 @@
                             <div class="modal-content">
                               <span onclick="closeModal('{{prop[4]}}')" class="close">&times;</span>
                               <h3>Property Information: <span onclick="deleteProp('{{prop[4]}}')" class="delete">Delete Property</span> </h3>
-                              <form  class="prop_info" method="POST" action="/add_availability">
+                              <div  class="prop_info">
                                 <input type="text" name="pid" value="{{prop[4]}}" hidden/>
                                 <input type="text" name="uid" value="{{user[0]}}" hidden/>
                                 <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
@@ -77,7 +77,7 @@
                                         <div id="avail_rows_{{prop[4]}}" class="avail_rows">
                                         </div>
                                     </div>
-                                    <div>
+                                    <form method="POST" action="/add_availability">
                                         <h4>Add Availability: </h4>
                                         <h5>
                                             <span>Start: </span>
@@ -87,10 +87,10 @@
                                             <span>End: </span>
                                             <input name="end_at" type="date" required/>
                                         </h5>
-                                    </div>
+                                        <button type="submit" class="update_avail">Update</button>
+                                    </form>
                                 </div>
-                                <button type="submit" class="update_avail">Update</button>
-                              </form>
+                            </div>
                             </div>
                         
                         </div>
@@ -265,21 +265,39 @@
             const {times} = await get(`/available_times?pid=${pid}`);
             const rows = document.getElementById("avail_rows_" + pid);
             
-            for (const time of times) {
+            for (let i = 0; i < times.length; i++) {
                 rows.innerHTML += `
-                    <div class="inner">
-                        <h5>
-                            <span>Start: </span>
-                            <span>${time[0]}</span>
-                        </h5>
-                        <h5>
-                            <span>End: </span>
-                            <span>${time[1]}</span>
-                        </h5>
+                    <div class="inner" id="${pid}_times_${i}">
+                        <div class="time">
+                            <h5>
+                                <span>Start: </span>
+                                <span>${refactor(times[i][0])}</span>
+                            </h5>
+                            <h5>
+                                <span>End: </span>
+                                <span>${refactor(times[i][1])}</span>
+                            </h5>
+                        </div>
+                        <button onclick="removeAvail('${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>
                     </div>
                 `
             }
-        }       
+        }     
+        
+        function removeAvail (id, start, end) {
+            const avail = document.getElementById(id);
+
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function () {
+                if(this.readyState == 4 && this.status == 200) {
+                    avail.remove();
+                }
+            }
+
+            req.open('POST', '/remove_availability', true);
+            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            req.send(`start_from=${start}&end_at=${end}`);
+        }
         
         function closeModal (pid)  {
             pid = uid === localStorage.getItem('uid') ? pid : `${pid}_2`;
@@ -292,6 +310,12 @@
 
         async function get(url) {
             return await fetch(url).then(res => res.json());
+        }
+
+        function refactor (time) {
+            const arr = time.split(" ").slice(0, 3);
+            return arr.join(" ");
+
         }
     </script>
     {% endblock %}

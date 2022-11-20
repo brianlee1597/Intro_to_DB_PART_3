@@ -402,7 +402,7 @@ def add_availability():
   
   # redirect('/user?uid=' + uid)
   
-@app.route('/remove_availability')
+@app.route('/remove_availability', methods=['POST'])
 # will need to know which prop (pid) for host
 def remove_availability():
   pid = request.form.get("pid")  

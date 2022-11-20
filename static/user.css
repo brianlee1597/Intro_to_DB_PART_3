@@ -149,6 +149,7 @@
   }
 
   .update_avail {
+    width: 100%;
     padding: 10px 30px;
     background-color: transparent;
     border: 2px solid black;
@@ -191,7 +192,7 @@
   }
 
 .avail_rows {
-  max-height: 100px;
+  max-height: 150px;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -199,13 +200,26 @@
 }
 
 .avail_rows > .inner {
-  cursor: pointer;
-  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
   background-color: lightpink;
   padding: 10px 0;
   border-radius: 25px;
+}
+
+.avail_rows > .inner > .time {
+  text-align: center;
 } 
 
-.avail_rows > .inner h5 {
+.avail_rows > .inner > .time h5 {
   margin: 0;
+}
+
+.avail_rows > .inner > button {
+  background-color: transparent;
+  color: red;
+  border: 2px solid red;
+  border-radius: 50%;
+  cursor: pointer;
 }
