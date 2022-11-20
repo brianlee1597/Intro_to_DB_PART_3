@@ -278,13 +278,13 @@
                                 <span>${refactor(times[i][1])}</span>
                             </h5>
                         </div>
-                        <button onclick="removeAvail('${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>
+                        <button onclick="removeAvail('${pid}','${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>
                     </div>
                 `
             }
         }     
         
-        function removeAvail (id, start, end) {
+        function removeAvail (pid, id, start, end) {
             const avail = document.getElementById(id);
 
             var req = new XMLHttpRequest();
@@ -296,7 +296,7 @@
 
             req.open('POST', '/remove_availability', true);
             req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-            req.send(`start_from=${start}&end_at=${end}`);
+            req.send(`pid=${pid}&start_from=${start}&end_at=${end}`);
         }
         
         function closeModal (pid)  {
