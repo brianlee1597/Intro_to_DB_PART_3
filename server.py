@@ -415,8 +415,8 @@ def remove_availability():
   start_from = "2022-03-01"
   end_at = "2022-12-10"
 
-  start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
-  end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
+  start_from = datetime.strptime(start_from, '%a, %d %b %Y %H:%M:%S %Z').date()
+  end_at = datetime.strptime(end_at, '%a, %d %b %Y %H:%M:%S %Z').date()
   
   current_availability = get_curr_availability(pid)
   tmp = list(map(list, current_availability))
