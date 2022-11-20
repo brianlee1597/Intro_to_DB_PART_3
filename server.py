@@ -383,6 +383,19 @@ def add_availability():
   start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
   end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
   
+  # check user input actually affect the rental dates
+  rental_dates = get_rental_dates(pid)
+  tmp = list(map(list, rental_dates))
+  tmp.append([start_from, end_at])
+
+  new_rental_dates = remove_availability_helper(tmp, [start_from, end_at])
+  rental_dates = list(map(list, rental_dates))
+  
+  if rental_dates != new_rental_dates:
+    data = {'message': ' update availability fail: conflict rental dates from other users', 'code': 'FAIL'}
+    return make_response(jsonify(data), 200)    
+  
+  # check if user input actually change the current_availability
   current_availability = get_curr_availability(pid)
   tmp = list(map(list, current_availability))
   tmp.append([start_from, end_at])
@@ -390,7 +403,6 @@ def add_availability():
   new_availability = add_availability_helper(tmp)
   current_availability = list(map(list, current_availability))
   
-  # check if user input actually change the current_availability
   if new_availability == current_availability:
     data = {'message': ' update availability fail: invalid input', 'code': 'FAIL'}
     return make_response(jsonify(data), 200)   
@@ -537,6 +549,17 @@ def get_curr_availability(pid):
   AVAILABILITY_BY_PID.close()
   return res
 
+def get_rental_dates(pid):
+  RENTAL_DATES_BY_PID =  g.conn.execute(
+    """
+    SELECT from_date, to_date
+    FROM record
+    WHERE pid = '{}' ORDER BY from_date, from_date
+    """.format(pid))
+  
+  res = RENTAL_DATES_BY_PID.all()
+  RENTAL_DATES_BY_PID.close()
+  return res
     
     
 ########## API ENDPOINTS ##########
