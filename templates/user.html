@@ -161,7 +161,10 @@
             var req = new XMLHttpRequest();
             req.onreadystatechange = function () {
                 if(this.readyState == 4 && this.status == 200) {
-                    console.log(this.responseText);
+                    if(this.readyState == 4 && this.status == 200) {
+                        alert(this.responseText);
+                        window.location.reload();
+                    }
                 }
             }
 
