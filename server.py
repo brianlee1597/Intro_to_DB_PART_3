@@ -202,8 +202,8 @@ def user():
 
     RECORD_QUERY = g.conn.execute("""
       SELECT * 
-      FROM record
-      WHERE uid_renter = %s
+      FROM record R, locates_addresses L
+      WHERE uid_renter = %s AND R.pid = L.pid
     """, uid)
 
     try:
