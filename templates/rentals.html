@@ -167,8 +167,6 @@
 
             const {times} = await get(`/available_times?pid=${pid.replace("_2", "")}`);
 
-            console.log(times);
-
             const rows = document.getElementById("avail_rows_" + pid);
             
             for (let i = 0; i < times.length; i++) {
@@ -227,7 +225,8 @@
             var req = new XMLHttpRequest();
             req.onreadystatechange = function () {
                 if(this.readyState == 4 && this.status == 200) {
-                    console.log(this.responseText);
+                    alert(this.responseText);
+                    window.location.reload();
                 }
             }
 

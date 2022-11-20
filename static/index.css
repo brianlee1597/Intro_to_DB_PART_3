@@ -127,3 +127,142 @@
     text-align: center;
     color: grey;
 }
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 600px; /* Could be more or less, depending on screen size */
+    height: 450px;
+  }
+  
+  /* The Close Button */
+  .close, .close2 {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus,
+  .close2:hover,
+  .close2:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .prop_info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 375px;
+    overflow-y: scroll;
+  }
+
+  .prop_info img {
+    height: 150px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .available {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+
+  .update_avail {
+    width: 100%;
+    padding: 10px 30px;
+    background-color: transparent;
+    border: 2px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .update_avail:hover {
+    color: white;
+    background-color: black;
+  }
+
+  .delete {
+    font-size: medium;
+    color: grey;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 250px;
+  }
+
+  .user_history {
+    padding: 0 25px;
+    max-height: 300px;
+    overflow: scroll;
+  }
+
+  #cr_form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form_row {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    padding: 2.5px 0;
+  }
+
+.avail_rows {
+  max-height: 150px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avail_rows > .inner {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  background-color: lightpink;
+  padding: 10px 0;
+  border-radius: 25px;
+}
+
+.avail_rows > .inner > .time {
+  text-align: center;
+} 
+
+.avail_rows > .inner > .time h5 {
+  margin: 0;
+}
+
+.avail_rows > .inner > button {
+  background-color: transparent;
+  color: red;
+  border: 2px solid red;
+  border-radius: 50%;
+  cursor: pointer;
+}
