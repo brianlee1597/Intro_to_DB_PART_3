@@ -9,13 +9,15 @@ The application is a mockup of AirBnb using PostgreSQL Relational Database Schem
 It consists of pages such as rentals, users, and property modals, and has functionalities like
 create user, login user, create a property, set availabilities for a property, book a rental, and much more.
 
+We suggest login with 0000000000 (phone number) and adgj1597 (password) for demo purposes.
+
 ## Submission Information
 
 1. PostgreSQL Account:
 - username: hw2910
 - password: 2608
 
-2. Our deployment on GCP: http://34.75.2.5:8111/ Hosts can check the number of properties they own, and manage them
+2. Our deployment on GCP: http://34.75.2.5:8111/
 
 3. Description 
 - Implemented features as proposed
@@ -31,7 +33,6 @@ create user, login user, create a property, set availabilities for a property, b
     - A simple user login/sign up interface, so that visitors cannot book a property while being allowed to browse through the site
 
 4. Two Interesting Pages and queries:
-
 - rentals.html (main page)
     - **Filter/Sort Combined Parameters**: the rentals page requires a URL Parameters of multiple filter/sort categories in order to show it on the front end, including but not limited to start-end dates, amenity types and sizes, as well as order by property size ascending or descending.
     - This does not come from a AJAX call or a form, rather it is built into the URL, and server-side rendered.
