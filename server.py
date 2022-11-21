@@ -207,7 +207,7 @@ def user():
     """.format(uid))
 
         RECORD_QUERY = g.conn.execute("""
-      SELECT * 
+      SELECT R.pid, from_date, to_date, L.addr, L.city, L.state
       FROM record R, locates_addresses L
       WHERE uid_renter = %s AND R.pid = L.pid
     """, uid)

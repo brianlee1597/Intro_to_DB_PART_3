@@ -171,7 +171,7 @@
           <div class="user_history">
             <h3>History:</h3>
             {%for rec in record%}
-            <h1>{{rec}}</h1>
+            <h1>Property ID: {{rec[0]}} From: {{rec[1]}} To: {{rec[2]}} Address:{{rec[3]}}</h1>
             {%endfor%}
           </div>
         </div>
