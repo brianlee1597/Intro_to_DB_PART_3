@@ -1,40 +1,43 @@
 {% if request.endpoint == 'create' or request.endpoint == 'login' %}
-    <style>
-        nav > .inner_container > .login_link > .login_button {
-            color: white;
-            background-color: black;
-        }
-    </style>
+<!-- minor extra styling for nav -->
+<style>
+  nav > .inner_container > .login_link > .login_button {
+    color: white;
+    background-color: black;
+  }
+</style>
 {% endif %}
 
 <nav>
-    <div id="nav_container" class="inner_container">
-      <h3><a href="/">Easy Rental</a></h3>
-    </div>
+  <div id="nav_container" class="inner_container">
+    <h3><a href="/">Easy Rental</a></h3>
+  </div>
 
-    <script>
-        window.addEventListener("load", () => {
-            const loggedIn = localStorage.getItem('loggedIn');
-            const uid = localStorage.getItem('uid');
-            let html;
+  <script>
+    //on load, append the right buttons to the right side of nav depending on login status
+    window.addEventListener("load", () => {
+      const loggedIn = localStorage.getItem("loggedIn");
+      const uid = localStorage.getItem("uid");
+      let html;
 
-            if (loggedIn) {
-                html = `
+      if (loggedIn) {
+        html = `
                     <div class="loggedin_buttons">
                         <a href="/user?uid=${uid}" class="login_link"><button class="my_profile">My Profile</button></a>
                         <a onclick="logout()" class="login_link"><button class="logout">Log Out</button></a>
                     </div>
-                `
-            } else {
-                html = `<a href="/login" class="login_link"><button class="login_button">Login / Create Account</button></a>`
-            }
+                `;
+      } else {
+        html = `<a href="/login" class="login_link"><button class="login_button">Login / Create Account</button></a>`;
+      }
 
-            document.getElementById("nav_container").innerHTML += html;
-        })
+      document.getElementById("nav_container").innerHTML += html;
+    });
 
-        function logout() {
-            localStorage.clear();
-            window.location = "/";
-        }
-    </script>
+    //when user presses logout, clear cache and refresh to main page
+    function logout() {
+      localStorage.clear();
+      window.location = "/";
+    }
+  </script>
 </nav>

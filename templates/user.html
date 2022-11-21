@@ -1,198 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='user.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='user.css') }}"
+    />
     <title>User Page</title>
-</head>
-<body>
-    {% extends "layout.html" %}
-
-    {% block content %}
+  </head>
+  <body>
+    {% extends "layout.html" %} {% block content %}
     <div id="main_container">
-        <div id="inner_grid">
-            <div id="left_user_info">
-                <div class="user_info">
+      <div id="inner_grid">
+        <div id="left_user_info">
+          <div class="user_info">
+            <div>
+              <img
+                class="user_image"
+                src="https://images.pexels.com/photos/1182825/pexels-photo-1182825.jpeg?cs=srgb&dl=pexels-omar-l%C3%B3pez-1182825.jpg&fm=jpg&w=640&h=427&_gl=1*17slk5g*_ga*MTA4MTIyODk5MC4xNjY4NDAzOTEz*_ga_8JE65Q40S6*MTY2ODQwMzkxNC4xLjEuMTY2ODQwMzk3Mi4wLjAuMA.."
+              />
+            </div>
+            <div class="info">
+              <h4 class="bubble">
+                <span>User ID:</span>
+                <span>{{user[0]}}</span>
+              </h4>
+              <h4 class="bubble">
+                <span>Name:</span>
+                <span>{{user[1]}} {{user[2]}}</span>
+              </h4>
+              <h4 class="bubble">
+                <span>Phone #:</span>
+                <span>{{user[3]}}</span>
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div id="right_rentals">
+          <div class="user_rentals">
+            <h3>Properties:</h3>
+            {% for prop in user_props %}
+            <div onclick="openModal('{{prop[4]}}')" class="rentals">
+              <h5>
+                <span>Address: </span>
+                <span>{{prop[0]}}</span>
+              </h5>
+              <h5>
+                <span>City: </span>
+                <span>{{prop[1]}}</span>
+              </h5>
+              <h5>
+                <span>State: </span>
+                <span>{{prop[2]}}</span>
+              </h5>
+              <h5>
+                <span>Postal Code: </span>
+                <span>{{prop[3]}}</span>
+              </h5>
+              <h5>
+                <span>PID: </span>
+                <span>{{prop[4]}}</span>
+              </h5>
+            </div>
+
+            <!-- user property modal -->
+            <div id="{{prop[4]}}" class="modal">
+              <div class="modal-content">
+                <span onclick="closeModal('{{prop[4]}}')" class="close"
+                  >&times;</span
+                >
+                <h3>
+                  Property Information:
+                  <span onclick="deleteProp('{{prop[4]}}')" class="delete"
+                    >Delete Property</span
+                  >
+                </h3>
+                <div class="prop_info">
+                  <img
+                    src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"
+                  />
+                  <div class="available">
+                    <div class="inner">
+                      <h4>Availability:</h4>
+                      <div id="avail_rows_{{prop[4]}}" class="avail_rows"></div>
+                    </div>
+                    <form method="POST" action="/add_availability">
+                      <input
+                        type="text"
+                        name="pid"
+                        value="{{prop[4]}}"
+                        hidden
+                      />
+                      <input
+                        type="text"
+                        name="uid"
+                        value="{{user[0]}}"
+                        hidden
+                      />
+                      <h4>Add Availability:</h4>
+                      <h5>
+                        <span>Start: </span>
+                        <input name="start_from" type="date" required />
+                      </h5>
+                      <h5>
+                        <span>End: </span>
+                        <input name="end_at" type="date" required />
+                      </h5>
+                      <button type="submit" class="update_avail">Update</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- someone else's property modal -->
+            <div id="{{prop[4]}}_2" class="modal">
+              <div class="modal-content">
+                <span onclick="closeModal('{{prop[4]}}')" class="close2"
+                  >&times;</span
+                >
+                <h3>Property Information:</h3>
+                <div class="prop_info">
+                  <input type="text" name="pid" value="{{prop[4]}}" hidden />
+                  <input type="text" name="uid" value="{{user[0]}}" hidden />
+                  <img
+                    src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"
+                  />
+                  <div class="available">
                     <div>
-                        <img class="user_image" 
-                        src="https://images.pexels.com/photos/1182825/pexels-photo-1182825.jpeg?cs=srgb&dl=pexels-omar-l%C3%B3pez-1182825.jpg&fm=jpg&w=640&h=427&_gl=1*17slk5g*_ga*MTA4MTIyODk5MC4xNjY4NDAzOTEz*_ga_8JE65Q40S6*MTY2ODQwMzkxNC4xLjEuMTY2ODQwMzk3Mi4wLjAuMA.."/>
+                      <h4>Availability:</h4>
+                      <div
+                        id="avail_rows_{{prop[4]}}_2"
+                        class="avail_rows"
+                      ></div>
                     </div>
-                    <div class="info">
-                        <h4 class="bubble">
-                            <span>User ID:</span>
-                            <span>{{user[0]}}</span>
-                        </h4>
-                        <h4 class="bubble">
-                            <span>Name:</span>
-                            <span>{{user[1]}} {{user[2]}}</span>
-                        </h4>
-                        <h4 class="bubble">
-                            <span>Phone #:</span>
-                            <span>{{user[3]}}</span>
-                        </h4>
+                    <div>
+                      <h4>Rent From - To:</h4>
+                      <h5>
+                        <span>Start: </span>
+                        <input
+                          id="start_from_{{prop[4]}}"
+                          name="start_from"
+                          type="date"
+                        />
+                      </h5>
+                      <h5>
+                        <span>End: </span>
+                        <input
+                          id="end_at_{{prop[4]}}"
+                          name="end_at"
+                          type="date"
+                        />
+                      </h5>
                     </div>
+                  </div>
+                  <button
+                    onclick="book('{{prop[4]}}', '{{user[0]}}')"
+                    class="update_avail"
+                  >
+                    Book
+                  </button>
                 </div>
+              </div>
             </div>
-            <div id="right_rentals">
-                <div class="user_rentals">
-                    <h3>Properties: </h3>
-                    {% for prop in user_props %}
-                        <div onclick="openModal('{{prop[4]}}')" class="rentals">
-                            <h5>
-                                <span>Address: </span>
-                                <span>{{prop[0]}}</span>
-                            </h5>
-                            <h5>
-                                <span>City: </span>
-                                <span>{{prop[1]}}</span>
-                            </h5>
-                            <h5>
-                                <span>State: </span>
-                                <span>{{prop[2]}}</span>
-                            </h5>
-                            <h5>
-                                <span>Postal Code: </span>
-                                <span>{{prop[3]}}</span>
-                            </h5>
-                            <h5>
-                                <span>PID: </span>
-                                <span>{{prop[4]}}</span>
-                            </h5>
-                        </div>
-
-                        <div id="{{prop[4]}}" class="modal">                    
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                              <span onclick="closeModal('{{prop[4]}}')" class="close">&times;</span>
-                              <h3>Property Information: <span onclick="deleteProp('{{prop[4]}}')" class="delete">Delete Property</span> </h3>
-                              <div  class="prop_info">
-                                <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
-                                <div class="available">
-                                    <div class="inner">
-                                        <h4>Availability: </h4>
-                                        <div id="avail_rows_{{prop[4]}}" class="avail_rows">
-                                        </div>
-                                    </div>
-                                    <form method="POST" action="/add_availability">
-                                        <input type="text" name="pid" value="{{prop[4]}}" hidden/>
-                                        <input type="text" name="uid" value="{{user[0]}}" hidden/>
-                                        <h4>Add Availability: </h4>
-                                        <h5>
-                                            <span>Start: </span>
-                                            <input name="start_from" type="date" required/>
-                                        </h5>
-                                        <h5>
-                                            <span>End: </span>
-                                            <input name="end_at" type="date" required/>
-                                        </h5>
-                                        <button type="submit" class="update_avail">Update</button>
-                                    </form>
-                                </div>
-                            </div>
-                            </div>
-                        
-                        </div>
-
-                        <div id="{{prop[4]}}_2" class="modal">                    
-
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                              <span onclick="closeModal('{{prop[4]}}')" class="close2">&times;</span>
-                              <h3>Property Information: </h3>
-                                <div class="prop_info">
-                                    <input type="text" name="pid" value="{{prop[4]}}" hidden/>
-                                    <input type="text" name="uid" value="{{user[0]}}" hidden/>
-                                    <img src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"/>
-                                    <div class="available">
-                                        <div>
-                                            <h4>Availability: </h4>
-                                            <div id="avail_rows_{{prop[4]}}_2" class="avail_rows">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h4>Rent From - To: </h4>
-                                            <h5>
-                                                <span>Start: </span>
-                                                <input id="start_from_{{prop[4]}}" name="start_from" type="date"/>
-                                            </h5>
-                                            <h5>
-                                                <span>End: </span>
-                                                <input id="end_at_{{prop[4]}}" name="end_at" type="date"/>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                    <button onclick="book('{{prop[4]}}', '{{user[0]}}')" class="update_avail">Book</button>
-                                </div>
-                            </div>
-                        
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="user_history">
-                    <h3>History: </h3>
-                    {%for rec in record%}
-                        <h1>{{rec}}</h1>
-                    {%endfor%}
-                </div>
-            </div>
+            {% endfor %}
+          </div>
+          <div class="user_history">
+            <h3>History:</h3>
+            {%for rec in record%}
+            <h1>{{rec}}</h1>
+            {%endfor%}
+          </div>
         </div>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        function book (pid, uid) {
-            const uid_renter = localStorage.getItem("uid");
-            if (!uid_renter) {
-                alert("Please log in first");
-                return;
-            }
+      /* booking function, contains AJAX call (for when you are on someone else's page) */
+      function book(pid, uid) {
+        //gets uid of the logged in user
+        const uid_renter = localStorage.getItem("uid");
 
-            const start_from = document.getElementById("start_from_" + pid).value;
-            const end_at = document.getElementById("end_at_" + pid).value;
-
-            if (!start_from || !end_at) {
-                alert("Please input a start-end time");
-                return;
-            }
-
-            var req = new XMLHttpRequest();
-            req.onreadystatechange = function () {
-                if(this.readyState == 4 && this.status == 200) {
-                    if(this.readyState == 4 && this.status == 200) {
-                        alert(this.responseText);
-                        window.location.reload();
-                    }
-                }
-            }
-
-            req.open('POST', '/book', true);
-            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-            req.send(`pid=${pid}&uid_host=${uid}&uid_renter=${uid_renter}&start_from=${start_from}&end_at=${end_at}`);
+        // needs to be logged in to proceed
+        if (!uid_renter) {
+          alert("Please log in first");
+          return;
         }
 
-        function deleteProp(pid) {
-            var req = new XMLHttpRequest();
-            req.onreadystatechange = function () {
-                if(this.readyState == 4 && this.status == 200) {
-                    window.location.reload();
-                }
-            }
+        // get form's start_from / end_at value
+        const start_from = document.getElementById("start_from_" + pid).value;
+        const end_at = document.getElementById("end_at_" + pid).value;
 
-            req.open('POST', '/delete_prop', true);
-            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-            req.send(`pid=${pid}`);
+        // if user didn't choose dates, then stop
+        if (!start_from || !end_at) {
+          alert("Please input a start-end time");
+          return;
         }
 
-        const uid = '{{user[0]}}';
-        
-        window.addEventListener('load', () => {
-            const user_info = document.getElementById("left_user_info");
+        // POSTs booking request with specified params
+        $.post(
+          {
+            url: `/book`,
+          },
+          { pid, uid_host: uid, uid_renter, start_from, end_at }
+        )
+          .done((data) => {
+            alert(JSON.stringify(data));
+            window.location.reload();
+          })
+          .fail((data) => console.log(data));
+      }
 
-            if (uid === localStorage.getItem('uid')) {
-                user_info.innerHTML += `
+      // delete your own property function
+      function deleteProp(pid) {
+        // POSTs delete_prop with specified params
+        $.post(
+          {
+            url: `/delete_prop`,
+          },
+          { pid }
+        )
+          .done((data) => {
+            window.location.reload();
+          })
+          .fail((data) => console.log(data));
+      }
+
+      //user's id for this page
+      const uid = "{{user[0]}}";
+
+      /* when page loads, find out if there's a user logged in
+       * if there are, check the cached uid vs the uid above, and if they are same, the user is visiting their own page.
+       * when user is visiting their own page, append create rental form to html
+       */
+      window.addEventListener("load", () => {
+        const user_info = document.getElementById("left_user_info");
+
+        if (uid === localStorage.getItem("uid")) {
+          user_info.innerHTML += `
                     <div class="create_prop">
                         <h2>Create Rental</h2>
                         <form id="cr_form" method="POST" action="create_prop">
@@ -283,72 +331,89 @@
                             <button type="submit">Submit</button>
                         </form>
                     </div>
-                `
-            }
-        })
-        
-        async function openModal (pid) {
-            pid = uid === localStorage.getItem('uid') ? pid : `${pid}_2`;
-            var modal = document.getElementById(pid);
-            modal.style.display = "block";
+                `;
+        }
+      });
 
-            const {times} = await get(`/available_times?pid=${pid.replace("_2", "")}`);
-            const rows = document.getElementById("avail_rows_" + pid);
-            
-            for (let i = 0; i < times.length; i++) {
-                rows.innerHTML += `
+      /* Open Modal function */
+      async function openModal(pid) {
+        //pid is changed to pid_2 if user is not on their own page or not seeing their own property.
+        //this is done to create dynamic modal opens, based on whether user is seeing their own property or someone elses,
+        //the modal buttons and functionalities are different
+        pid = uid === localStorage.getItem("uid") ? pid : `${pid}_2`;
+        const modal = document.getElementById(pid);
+        modal.style.display = "block";
+
+        //get's all available times for this particular property
+        const { times } = await $.get(`/available_times`, {
+          pid: pid.replace("_2", ""),
+        });
+
+        // uses the pid to generate id to get the div parent for available rows
+        const rows = document.getElementById("avail_rows_" + pid);
+
+        //for each time returned, append a bubble to the modal ui
+        //(in react, this would be the same as data.map())
+        //also, if user is themselves, add remove button
+        for (let i = 0; i < times.length; i++) {
+          rows.innerHTML += `
                     <div class="inner" id="${pid}_times_${i}">
                         <div class="time">
                             <h5>
                                 <span>Start: </span>
-                                <span>${refactor(times[i][0])}</span>
+                                <span>${getYMD(times[i][0])}</span>
                             </h5>
                             <h5>
                                 <span>End: </span>
-                                <span>${refactor(times[i][1])}</span>
+                                <span>${getYMD(times[i][1])}</span>
                             </h5>
                         </div>
-                        ${pid.includes("_2") ? "" : `<button onclick="removeAvail('${pid}','${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>`}
+                        ${
+                          pid.includes("_2")
+                            ? ""
+                            : `<button onclick="removeAvail('${pid}','${pid}_times_${i}', '${times[i][0]}', '${times[i][1]}')">X</button>`
+                        }
                     </div>
-                `
-            }
-        }     
-        
-        function removeAvail (pid, id, start, end) {
-            const avail = document.getElementById(id);
-
-            var req = new XMLHttpRequest();
-            req.onreadystatechange = function () {
-                if(this.readyState == 4 && this.status == 200) {
-                    avail.remove();
-                }
-            }
-
-            req.open('POST', '/remove_availability', true);
-            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-            req.send(`pid=${pid}&start_from=${start}&end_at=${end}`);
+                `;
         }
-        
-        function closeModal (pid)  {
-            pid = uid === localStorage.getItem('uid') ? pid : `${pid}_2`;
-            var modal = document.getElementById(pid);
-            modal.style.display = "none";
+      }
 
-            const rows = document.getElementById("avail_rows_" + pid);
-            rows.innerHTML = "";
-        }       
+      /* Close modal function */
+      function closeModal(pid) {
+        //pid is altered to choose which modal to close
+        pid = uid === localStorage.getItem("uid") ? pid : `${pid}_2`;
 
-        async function get(url) {
-            return await fetch(url).then(res => res.json());
-        }
+        // resets modal
+        const modal = document.getElementById(pid);
+        modal.style.display = "none";
 
-        function refactor (time) {
-            const arr = time.split(" ").slice(0, 4);
-            return arr.join(" ");
+        // resets available rows to none
+        const rows = document.getElementById("avail_rows_" + pid);
+        rows.innerHTML = "";
+      }
 
-        }
+      /* removes availability for a particular property */
+      function removeAvail(pid, id, start_from, end_at) {
+        const avail = document.getElementById(id);
+
+        $.post(
+          {
+            url: `/remove_availability`,
+          },
+          { pid, start_from, end_at }
+        )
+          .done(() => {
+            avail.remove();
+          })
+          .fail((data) => console.log(data));
+      }
+
+      /* helper function to extract YY-MM-DD */
+      function getYMD(time) {
+        const arr = time.split(" ").slice(0, 4);
+        return arr.join(" ");
+      }
     </script>
     {% endblock %}
-    
-</body>
+  </body>
 </html>

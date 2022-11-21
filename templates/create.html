@@ -1,43 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='create_login.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='create_login.css') }}"
+    />
     <title>Login / Create Account</title>
-
-</head>
-<body>
-    {% extends "layout.html" %}
-
-    {% block content %}
+  </head>
+  <body>
+    {% extends "layout.html" %} {% block content %}
     <div id="main_container">
-        <form id="form_container" method="POST" action="/create_profile" >
-            <div class="choice">
-                <a href="/login"><h1 class="title">Login</h1></a>
-                <h1 class="title chosen">Create Account</h1>
-            </div>
-            <div class="name">
-                <input type="text" name="first_name" placeholder="First Name" required/>
-                <input type="text" name="last_name" placeholder="Last Name" required/>
-            </div>
-            <input class="full" type="tel" name="phone_number" maxlength="10" placeholder="Phone Number" required/>
-            <input class="full" type="text" name="password" placeholder="Password" required/>
-            <button type="submit">Submit</button>
-        </form>
+      <form id="form_container" method="POST" action="/create_profile">
+        <div class="choice">
+          <a href="/login"><h1 class="title">Login</h1></a>
+          <h1 class="title chosen">Create Account</h1>
+        </div>
+        <div class="name">
+          <input
+            type="text"
+            name="first_name"
+            placeholder="First Name"
+            required
+          />
+          <input
+            type="text"
+            name="last_name"
+            placeholder="Last Name"
+            required
+          />
+        </div>
+        <input
+          class="full"
+          type="tel"
+          name="phone_number"
+          maxlength="10"
+          placeholder="Phone Number"
+          required
+        />
+        <input
+          class="full"
+          type="text"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Submit</button>
+      </form>
     </div>
 
     <script>
-         window.addEventListener("load", () => {
-            const form = document.getElementById('form_container');
-            const dup = '{{duplicate}}';
+      /*
+            This script fetches a duplicate boolean from the server, and interprets it as a redirect
+            after user has tried to create a duplicate user, and appends a warning to html as a result.
+        */
+      window.addEventListener("load", () => {
+        const form = document.getElementById("form_container");
+        const dup = "{{duplicate}}";
 
-            if (dup == 'True') {
-                form.innerHTML += "<h5 class='warning'>Phone Number Already Exists.</h5>";
-            }
-         })
+        if (dup == "True") {
+          form.innerHTML +=
+            "<h5 class='warning'>Phone Number Already Exists.</h5>";
+        }
+      });
     </script>
     {% endblock %}
-</body>
+  </body>
 </html>

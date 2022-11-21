@@ -1,60 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='create_login.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='create_login.css') }}"
+    />
     <title>Login / Create Account</title>
-</head>
-<body>
-    {% extends "layout.html" %}
-    
-    {% block content %}
+  </head>
+  <body>
+    {% extends "layout.html" %} {% block content %}
     <div id="main_container">
-        <form id="form_container">
-            <div class="choice">
-                <h1 class="title chosen">Login</h1>
-                <a href="/create"><h1 class="title">Create Account</h1></a>
-            </div>
-            <input id="phone_number" class="full" type="tel" maxlength="11" placeholder="Phone Number" required/>
-            <input id="password" class="full" type="text" placeholder="Password" required/>
-            <button type="submit">Submit</button>
-        </form>
+      <form id="form_container">
+        <div class="choice">
+          <h1 class="title chosen">Login</h1>
+          <a href="/create"><h1 class="title">Create Account</h1></a>
+        </div>
+        <input
+          id="phone_number"
+          class="full"
+          type="tel"
+          maxlength="11"
+          placeholder="Phone Number"
+          required
+        />
+        <input
+          id="password"
+          class="full"
+          type="text"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Submit</button>
+      </form>
     </div>
 
     <script>
-        const form = document.getElementById("form_container");
-        // this is not a conventional login logic, but for this project where SQL is the main concern,
-        // i created a simple method to mimic a login behavior.
-        function loginUser() {
-            const phoneNumber = document.getElementById('phone_number').value;
-            const password = document.getElementById('password').value;
-            const params = `phone_number=${phoneNumber}&password=${password}`;
+      const form = document.getElementById("form_container");
+      // this is not a conventional login logic, but for this project where SQL is the main concern,
+      // i created a simple method to mimic a login behavior.
+      function loginUser() {
+        const phone_number = document.getElementById("phone_number").value;
+        const password = document.getElementById("password").value;
 
-            var req = new XMLHttpRequest();
-            req.onreadystatechange = function () {
-                if(this.readyState == 4 && this.status == 200) /* user exists */ {
-                    localStorage.setItem("loggedIn", "true");
-                    const resp = JSON.parse(this.response);
-                    localStorage.setItem("uid", resp.uid);
-                    window.location = '/user?uid=' + resp.uid;
-                
-                } else if (this.readyState == 4 && this.status == 401) /* user doesn't exist */ {
-                    form.innerHTML += "<h5 class='warning'>User doesn't exist: Please check your number and password again.</h5>"
-                }
-            }
+        // POSTs login_user request with specified params
+        $.post(
+          {
+            url: `/login_user`,
+          },
+          { phone_number, password }
+        )
+          .done((data) => {
+            // sets localStorage boolean and user id, and refreshes
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("uid", data.uid);
+            window.location = "/user?uid=" + data.uid;
+          })
+          .fail(() => {
+            //appends a warning to the FE UI.
+            form.innerHTML +=
+              "<h5 class='warning'>User doesn't exist: Please check your number and password again.</h5>";
+          });
+      }
 
-            req.open('POST', '/login_user', true);
-            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-            req.send(params);
-        }
-
-        form.addEventListener("submit", (event) => {
-          event.preventDefault();
-          loginUser();
-        });
+      // when form is submitted, prevent default behavior and send custom ajax call
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        loginUser();
+      });
     </script>
     {% endblock %}
-</body>
+  </body>
 </html>
