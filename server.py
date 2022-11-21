@@ -3,13 +3,10 @@ from sqlalchemy import *
 import datetime
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, jsonify, make_response, after_this_request
-from dotenv import load_dotenv
 import string
 import random
 import logging
 from datetime import datetime
-
-load_dotenv()
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -17,10 +14,8 @@ app = Flask(__name__, template_folder=tmpl_dir)
 s_user = os.environ.get('USERNAME')
 s_pass = os.environ.get('PASSWORD')
 
-DATABASEURI = f"postgresql://{s_user}:{s_pass}@34.75.94.195/proj1part2"
+DATABASEURI = f"postgresql://hw2910:2608@34.75.94.195/proj1part2"
 engine = create_engine(DATABASEURI)
-
-print(engine.table_names())
 
 #for CHEQUE_ACCOUNT, CREDIT_CARD
 def str_generator(size, chars=string.ascii_uppercase + string.digits):
