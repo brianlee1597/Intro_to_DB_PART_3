@@ -97,56 +97,6 @@
           </div>
         </div>
 
-        <!-- User property Modal -->
-        <div id="{{rental[0]}}" class="modal">
-          <div class="modal-content">
-            <span
-              onclick="closeModal('{{rental[0]}}', '{{rental[2]}}')"
-              class="close"
-              >&times;</span
-            >
-            <h3>Property Information:</h3>
-            <div class="prop_info">
-              <input type="text" name="pid" value="{{rental[0]}}" hidden />
-              <input type="text" name="uid" value="{{rental[2]}}" hidden />
-              <img
-                src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?cs=srgb&dl=pexels-binyamin-mellish-1396122.jpg&fm=jpg&w=640&h=427"
-              />
-              <div class="available">
-                <div>
-                  <h4>Availability:</h4>
-                  <div id="avail_rows_{{rental[0]}}" class="avail_rows"></div>
-                </div>
-                <div>
-                  <h4>Rent From - To:</h4>
-                  <h5>
-                    <span>Start: </span>
-                    <input
-                      id="start_from_{{rental[0]}}"
-                      name="start_from"
-                      type="date"
-                    />
-                  </h5>
-                  <h5>
-                    <span>End: </span>
-                    <input
-                      id="end_at_{{rental[0]}}"
-                      name="end_at"
-                      type="date"
-                    />
-                  </h5>
-                </div>
-              </div>
-              <button
-                onclick="book('{{rental[0]}}', '{{rental[2]}}')"
-                class="update_avail"
-              >
-                Book
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- Someone else's property Modal -->
         <div id="{{rental[0]}}_2" class="modal">
             <div class="modal-content">
@@ -207,6 +157,7 @@
         //this is done to create dynamic modal opens, based on whether user is seeing their own property or someone elses,
         //the modal buttons and functionalities are different
         pid = uid === localStorage.getItem("uid") ? pid : `${pid}_2`;
+
         const modal = document.getElementById(pid);
         modal.style.display = "block";
 
@@ -307,8 +258,9 @@
         const sort_by = document.getElementById("sort_by").value;
         var amenity1 = document.getElementById("amenity1").checked;
         var amenity2 = document.getElementById("amenity2").checked;
+        const uid = localStorage.getItem("uid") || "";
 
-        const url = `/rentals?from=${start_from}&to=${end_at}&order_by=${order_by}&sort_by=${sort_by}&amenity1=${amenity1}&amenity2=${amenity2}`;
+        const url = `/rentals?from=${start_from}&to=${end_at}&order_by=${order_by}&sort_by=${sort_by}&amenity1=${amenity1}&amenity2=${amenity2}&uid=${uid}`;
         window.location = url;
       }
     </script>
