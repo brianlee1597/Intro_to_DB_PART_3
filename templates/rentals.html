@@ -149,7 +149,6 @@
 
         <!-- Someone else's property Modal -->
         <div id="{{rental[0]}}_2" class="modal">
-            <!-- Modal content -->
             <div class="modal-content">
               <span
                 onclick="closeModal('{{rental[0]}}', '{{rental[2]}}')"
@@ -173,7 +172,7 @@
                     <h5>
                       <span>Start: </span>
                       <input
-                        id="start_from_{{rental[0]}}"
+                        id="start_from_{{rental[0]}}_2"
                         name="start_from"
                         type="date"
                       />
@@ -181,7 +180,7 @@
                     <h5>
                       <span>End: </span>
                       <input
-                        id="end_at_{{rental[0]}}"
+                        id="end_at_{{rental[0]}}_2"
                         name="end_at"
                         type="date"
                       />
@@ -262,16 +261,17 @@
       function book(pid, uid) {
         //gets uid of the logged in user
         const uid_renter = localStorage.getItem("uid");
+        pid = uid === localStorage.getItem("uid") ? pid : `${pid}_2`;
+
+        // get form's start_from / end_at value
+        const start_from = $("#start_from_" + pid).val();
+        const end_at = $("#end_at_" + pid).val();
 
         // needs to be logged in to proceed
         if (!uid_renter) {
           alert("Please log in first");
           return;
         }
-
-        // get form's start_from / end_at value
-        const start_from = document.getElementById("start_from_" + pid).value;
-        const end_at = document.getElementById("end_at_" + pid).value;
 
         // if user didn't choose dates, then stop
         if (!start_from || !end_at) {
@@ -284,7 +284,7 @@
           {
             url: `/book`,
           },
-          { pid, uid_host: uid, uid_renter, start_from, end_at }
+          { pid: pid.replace("_2", ""), uid_host: uid, uid_renter, start_from, end_at }
         )
           .done((data) => {
             alert(JSON.stringify(data));

@@ -132,7 +132,7 @@
                     <h5>
                       <span>Start: </span>
                       <input
-                        id="start_from_{{rental[0]}}"
+                        id="start_from_{{rental[0]}}_2"
                         name="start_from"
                         type="date"
                       />
@@ -140,7 +140,7 @@
                     <h5>
                       <span>End: </span>
                       <input
-                        id="end_at_{{rental[0]}}"
+                        id="end_at_{{rental[0]}}_2"
                         name="end_at"
                         type="date"
                       />
@@ -163,6 +163,46 @@
     </div>
 
     <script>
+      /* booking function, contains AJAX call */
+      function book(pid, uid) {
+        //gets uid of the logged in user
+        const uid_renter = localStorage.getItem("uid");
+        pid = uid === localStorage.getItem("uid") ? pid : `${pid}_2`;
+
+        // get form's start_from / end_at value
+        const start_from = $("#start_from_" + pid).val();
+        const end_at = $("#end_at_" + pid).val();
+
+        // needs to be logged in to proceed
+        if (!uid_renter) {
+          alert("Please log in first");
+          return;
+        }
+
+        // if user didn't choose dates, then stop
+        if (!start_from || !end_at) {
+          alert("Please input a start-end time");
+          return;
+        }
+
+        // POSTs booking request with specified params
+        $.post(
+          {
+            url: `/book`,
+          },
+          {
+            pid: pid.replace("_2", ""),
+            uid_host: uid,
+            uid_renter,
+            start_from,
+            end_at,
+          }
+        ).done((data) => {
+          alert(JSON.stringify(data));
+          window.location.reload();
+        });
+      }
+
       /* Open Modal function */
       async function openModal(pid, uid) {
         //pid is changed to pid_2 if user is not on their own page or not seeing their own property.
@@ -217,39 +257,6 @@
         // resets available rows to none
         const rows = document.getElementById("avail_rows_" + pid);
         rows.innerHTML = "";
-      }
-
-      /* booking function, contains AJAX call */
-      function book(pid, uid) {
-        //gets uid of the logged in user
-        const uid_renter = localStorage.getItem("uid");
-
-        // needs to be logged in to proceed
-        if (!uid_renter) {
-          alert("Please log in first");
-          return;
-        }
-
-        // get form's start_from / end_at value
-        const start_from = document.getElementById("start_from_" + pid).value;
-        const end_at = document.getElementById("end_at_" + pid).value;
-
-        // if user didn't choose dates, then stop
-        if (!start_from || !end_at) {
-          alert("Please input a start-end time");
-          return;
-        }
-
-        // POSTs booking request with specified params
-        $.post(
-          {
-            url: `/book`,
-          },
-          { pid, uid_host: uid, uid_renter, start_from, end_at }
-        ).done((data) => {
-          alert(JSON.stringify(data));
-          window.location.reload();
-        });
       }
 
       // refreshes page to the exact rental filter option we initially had
