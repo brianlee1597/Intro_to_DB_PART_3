@@ -18,13 +18,6 @@ s_pass = os.environ.get('PASSWORD')
 DATABASEURI = f"postgresql://hw2910:2608@34.75.94.195/proj1part2"
 engine = create_engine(DATABASEURI)
 
-# for CHEQUE_ACCOUNT, CREDIT_CARD
-
-
-def str_generator(size, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
-
-
 @app.before_request
 def before_request():
     try:
@@ -35,7 +28,6 @@ def before_request():
         traceback.print_exc()
         g.conn = None
 
-
 @app.teardown_request
 def teardown_request(exception):
     try:
@@ -45,7 +37,7 @@ def teardown_request(exception):
 
 ########## URIS ##########
 
-
+# Home page
 @app.route('/')
 def index():
 
@@ -74,13 +66,12 @@ def index():
     results = g.conn.execute(FEATURED_RENTALS)
     rentals = []
     for result in results:
-        rentals.append(result)
-
+      rentals.append(result)
     results.close()
 
     return render_template("index.html", rentals=rentals, min_start=min_start, max_to=max_to)
 
-
+# List of rentings page 
 @app.route('/rentals')
 def rentals():
 
@@ -106,7 +97,7 @@ def rentals():
         RENTALS = """
       Select DISTINCT ON(P.{}) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code
       FROM owned_properties P, is_available A, locates_addresses L, Users U
-      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}'
+      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' 
       ORDER BY P.{} {}
       """.format(order_by, start_from, end_at, order_by, sort_by)
     elif has_swimming_pool and has_gym:
@@ -168,17 +159,17 @@ def rentals():
         sort_html=sort_html
     )
 
-
+# User login
 @app.route('/login')
 def login():
     return render_template("login.html")
 
-
+# User sign up
 @app.route('/create')
 def create():
     return render_template("create.html", duplicate=False, error=False)
 
-
+# User profile 
 @app.route('/user')
 def user():
     uid = request.args.get('uid')
@@ -238,7 +229,7 @@ def user():
 
 ########## API ENDPOINTS ##########
 
-
+# Get current availability
 @app.route('/available_times', methods=['GET'])
 def available_times():
     try:
@@ -254,7 +245,7 @@ def available_times():
         data = {'message': 'FAILED FETCH', 'code': 'FAIL'}
         return make_response(jsonify(data), 404)
 
-
+# User creation
 @app.route('/create_profile', methods=['POST'])
 def createprofile():
     first_name = request.form['first_name']
@@ -302,7 +293,7 @@ def createprofile():
 
     return redirect('/login')
 
-
+# Login authentication 
 @app.route('/login_user', methods=['POST', 'GET'])
 def login_user():
     if request.method == "POST":
@@ -327,7 +318,7 @@ def login_user():
 
     return redirect("/login")
 
-
+# Property creation
 @app.route('/create_prop', methods=['POST'])
 def create_prop():
 
@@ -390,7 +381,7 @@ def create_prop():
 
     return redirect('/user?uid=' + uid_host)
 
-
+# Property deletion
 @app.route('/delete_prop', methods=['POST'])
 def delete_prop():
     pid = request.form['pid']
@@ -409,7 +400,7 @@ def delete_prop():
             'message': 'delete prop fail: since it has been rented to someone', 'code': 'FAIL'}
         return make_response(jsonify(data), 200)
 
-
+# Add availability
 @app.route('/add_availability', methods=["POST"])
 # will need to know which prop (pid) for host
 def add_availability():
@@ -452,7 +443,7 @@ def add_availability():
 
     # redirect('/user?uid=' + uid)
 
-
+# Remove availability
 @app.route('/remove_availability', methods=['POST'])
 # will need to know which prop (pid) for host
 def remove_availability():
@@ -482,7 +473,7 @@ def remove_availability():
 
     # redirect('/user?uid=' + uid)
 
-
+# Book function
 @app.route('/book', methods=["POST"])
 # will need to know which prop (pid) for renter
 # prop owner should not be able to book his prop, could hide it from public listing of props
@@ -536,16 +527,26 @@ def book():
         return make_response(jsonify(data), 200)
     else:
         modify_availability(new_availability, pid)
+        
+    try:
+      g.conn.execute("""
+      INSERT INTO record (uid_host, uid_renter, pid, transcation_id, from_date, to_date)
+      VALUES (%s, %s, %s, %s, %s, %s)
+      """, uid_host, uid_renter, pid, transcation_id, start_from, end_at)
+    except:
+      try:
+        g.conn.execute("""
+        INSERT INTO rent_to (uid_host, uid_renter, pid)
+        VALUES (%s, %s, %s)
+      """, uid_host, uid_renter, pid)
 
-    g.conn.execute("""
-    INSERT INTO rent_to (uid_host, uid_renter, pid)
-    VALUES (%s, %s, %s)
-  """, uid_host, uid_renter, pid)
-
-    g.conn.execute("""
-    INSERT INTO record (uid_host, uid_renter, pid, transcation_id, from_date, to_date)
-    VALUES (%s, %s, %s, %s, %s, %s)
-  """, uid_host, uid_renter, pid, transcation_id, start_from, end_at)
+        g.conn.execute("""
+        INSERT INTO record (uid_host, uid_renter, pid, transcation_id, from_date, to_date)
+        VALUES (%s, %s, %s, %s, %s, %s)
+      """, uid_host, uid_renter, pid, transcation_id, start_from, end_at)
+      except:
+        data = {'message': ' BOOK fail', 'code': 'FAIL'}
+        return make_response(jsonify(data), 200)
 
     g.conn.close()
 
@@ -553,7 +554,7 @@ def book():
     return make_response(jsonify(data), 200)
     # return redirect('/')
 
-
+# merge interval helper
 def add_availability_helper(intervals):
     res = []
     for i in sorted(intervals):
@@ -563,12 +564,12 @@ def add_availability_helper(intervals):
             res.append(i)
     return res
 
-
+# remove interval helper
 def remove_availability_helper(intervals, target):
     left, right = target
     return [[x, y] for a, b in intervals for x, y in ((a, min(b, left)), (max(a, right), b)) if x < y]
 
-
+# Reinsertion of availability helper
 def modify_availability(intervals, pid):
     g.conn.execute(
         """
@@ -583,7 +584,7 @@ def modify_availability(intervals, pid):
 
     # g.conn.close()
 
-
+# Get current availability helper
 def get_curr_availability(pid):
     AVAILABILITY_BY_PID = g.conn.execute(
         """
@@ -596,7 +597,7 @@ def get_curr_availability(pid):
     AVAILABILITY_BY_PID.close()
     return res
 
-
+# Get exisiting rental dates that other booked
 def get_rental_dates(pid):
     RENTAL_DATES_BY_PID = g.conn.execute(
         """
@@ -608,7 +609,10 @@ def get_rental_dates(pid):
     res = RENTAL_DATES_BY_PID.all()
     RENTAL_DATES_BY_PID.close()
     return res
-
+  
+# Random generator for CHEQUE_ACCOUNT, CREDIT_CARD for simplicity, instead of asking for fake input
+def str_generator(size, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 ########## API ENDPOINTS ##########
 
