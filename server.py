@@ -247,10 +247,7 @@ def available_times():
         current_availability = get_curr_availability(pid)
         tmp = list(map(list, current_availability))
 
-        print(tmp)
-
         data = {'message': 'TIMES FETCHED', 'code': 'SUCCESS', 'times': tmp}
-        print(data)
         return make_response(jsonify(data), 200)
     except:
         logging.exception("")
