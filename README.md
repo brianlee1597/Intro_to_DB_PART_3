@@ -9,8 +9,6 @@ The application is a mockup of AirBnb using PostgreSQL Relational Database Schem
 It consists of pages such as rentals, users, and property modals, and has functionalities like
 create user, login user, create a property, set availabilities for a property, book a rental, and much more.
 
-We suggest login with 0000000000 (phone number) and adgj1597 (password) for demo purposes.
-
 ## Submission Information
 
 1. PostgreSQL Account:
