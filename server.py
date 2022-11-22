@@ -6,7 +6,7 @@ from flask import Flask, request, render_template, g, redirect, Response, jsonif
 import string
 import random
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 tmpl_dir = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'templates')
@@ -516,7 +516,7 @@ def book():
 
     # remove logic like above
     start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
-    end_at = datetime.strptime(end_at, '%Y-%m-%d').date() - timedelta(days=1)
+    end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
 
     current_availability = get_curr_availability(pid)
     tmp = list(map(list, current_availability))
