@@ -17,10 +17,7 @@
       <div class="users">
         <div class="basic_nav">
           <h1>Featured Rentals</h1>
-          <a
-            href="rentals?from={{min_start}}&to={{max_to}}&order_by=pid&sort_by=ASC"
-            >See all rentals</a
-          >
+          <button onclick="routeToRentals()">See all rentals</button>
         </div>
         <div class="users_grid">
           {% for rental in rentals %}
@@ -218,6 +215,12 @@
         const uid = localStorage.getItem("uid") || "";
 
         const url = `/rentals?from=${start_from}&to=${end_at}&order_by=${order_by}&sort_by=${sort_by}&uid=${uid}`;
+        window.location = url;
+      }
+
+      function routeToRentals() {
+        const uid = localStorage.getItem("uid") || "";
+        const url = `rentals?from={{min_start}}&to={{max_to}}&order_by=pid&sort_by=ASC&uid=${uid}`;
         window.location = url;
       }
 

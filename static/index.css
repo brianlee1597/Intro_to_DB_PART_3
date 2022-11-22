@@ -52,11 +52,13 @@
   padding: 0 25px 0 10px;
 }
 
-#main_container > .users > .basic_nav > a {
+#main_container > .users > .basic_nav > button {
   color: grey;
   cursor: pointer;
   text-decoration: none;
+  border: none;
   border-bottom: 1px solid grey;
+  background-color: transparent;
 }
 
 #main_container > .users > .users_grid {
