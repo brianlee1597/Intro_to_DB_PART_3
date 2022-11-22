@@ -40,12 +40,15 @@ def teardown_request(exception):
 # Home page
 @app.route('/')
 def index():
-
+    uid = request.args.get("uid")
+    if not uid: uid = 0 # sanity check
+    
     FEATURED_RENTALS = """
     SELECT DISTINCT on (P.pid) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code 
     FROM owned_properties P, is_available A, locates_addresses L, Users U
-    WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host LIMIT 4;
-  """
+    WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND P.uid_host <> '{}'
+    LIMIT 4;
+  """.format(uid)
 
     MIN_FROM = """
     SELECT MIN(start_date) as start_date 
@@ -74,7 +77,8 @@ def index():
 # List of rentings page 
 @app.route('/rentals')
 def rentals():
-
+    uid = request.args.get("uid")
+    if not uid: uid = 0 # sanity check
     start_from = request.args.get("from")
     end_at = request.args.get("to")
     order_by = request.args.get("order_by")
@@ -97,33 +101,33 @@ def rentals():
         RENTALS = """
       Select DISTINCT ON(P.{}) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code
       FROM owned_properties P, is_available A, locates_addresses L, Users U
-      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' 
+      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' AND P.uid_host <> '{}'
       ORDER BY P.{} {}
-      """.format(order_by, start_from, end_at, order_by, sort_by)
+      """.format(order_by, start_from, end_at, uid, order_by, sort_by)
     elif has_swimming_pool and has_gym:
         RENTALS = """
       Select DISTINCT ON(P.{}) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code
       FROM owned_properties P, is_available A, locates_addresses L, Users U, equip_amenities E
-      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}'
+      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' AND P.uid_host <> '{}'
       AND E.pid = P.pid AND amenity_type = 1 AND amenity_type = 2
       ORDER BY P.{} {}
-      """.format(order_by, start_from, end_at, order_by, sort_by)
+      """.format(order_by, start_from, end_at, uid, order_by, sort_by)
     elif has_swimming_pool:
         RENTALS = """
       Select DISTINCT ON(P.{}) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code
       FROM owned_properties P, is_available A, locates_addresses L, Users U, equip_amenities E
-      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}'
+      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' AND P.uid_host <> '{}'
       AND E.pid = P.pid AND amenity_type = 1
       ORDER BY P.{} {}
-      """.format(order_by, start_from, end_at, order_by, sort_by)
+      """.format(order_by, start_from, end_at, uid, order_by, sort_by)
     else:
         RENTALS = """
       Select DISTINCT ON(P.{}) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code
       FROM owned_properties P, is_available A, locates_addresses L, Users U, equip_amenities E
-      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}'
+      WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' AND P.uid_host <> '{}'
       AND E.pid = P.pid AND amenity_type = 2
       ORDER BY P.{} {}
-      """.format(order_by, start_from, end_at, order_by, sort_by)
+      """.format(order_by, start_from, end_at, uid, order_by, sort_by)
 
     order_html = [
         [order_by == 'pid', 'pid', "Property ID"],
