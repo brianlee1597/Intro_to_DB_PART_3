@@ -10,7 +10,7 @@
 
 <nav>
   <div id="nav_container" class="inner_container">
-    <h3><a href="/">Easy Rental</a></h3>
+    <h3><button onclick="routeToMain()">Easy Rental</button></h3>
   </div>
 
   <script>
@@ -38,6 +38,11 @@
     function logout() {
       localStorage.clear();
       window.location = "/";
+    }
+
+    function routeToMain() {
+      const url = `/?uid=${localStorage.getItem("uid") || ""}`;
+      window.location = url;
     }
   </script>
 </nav>

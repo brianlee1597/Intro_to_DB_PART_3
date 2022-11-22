@@ -40,9 +40,13 @@ nav > .inner_container {
   z-index: 10;
 }
 
-nav > .inner_container > h3 > a {
+nav > .inner_container > h3 > button {
   color: black;
   text-decoration: none;
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 nav > .inner_container > .login_link {
