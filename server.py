@@ -6,7 +6,7 @@ from flask import Flask, request, render_template, g, redirect, Response, jsonif
 import string
 import random
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 tmpl_dir = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'templates')
@@ -107,9 +107,9 @@ def rentals():
     elif has_swimming_pool and has_gym:
         RENTALS = """
       Select DISTINCT ON(P.{}) P.pid, size, uid_host, start_date, end_date, first_name, last_name, addr, city, state, postal_code
-      FROM owned_properties P, is_available A, locates_addresses L, Users U, equip_amenities E
+      FROM owned_properties P, is_available A, locates_addresses L, Users U, equip_amenities E1,  equip_amenities E2
       WHERE P.pid = A.pid AND L.pid = P.pid AND U.uid = P.uid_host AND A.start_date >= '{}' AND A.end_date <= '{}' AND P.uid_host <> '{}'
-      AND E.pid = P.pid AND amenity_type = 1 AND amenity_type = 2
+      AND E1.pid = P.pid AND E1.amenity_type = 1 AND E2.amenity_type = 2 AND E1.pid = E2.pid
       ORDER BY P.{} {}
       """.format(order_by, start_from, end_at, uid, order_by, sort_by)
     elif has_swimming_pool:
@@ -511,12 +511,12 @@ def book():
 
     if len(between_interval) != 1:
         data = {
-            'message': ' booking fail: invalid input or wrong data insertion in DB before', 'code': 'FAIL'}
+            'message': ' booking fail: invalid input', 'code': 'FAIL'}
         return make_response(jsonify(data), 200)
 
     # remove logic like above
     start_from = datetime.strptime(start_from, '%Y-%m-%d').date()
-    end_at = datetime.strptime(end_at, '%Y-%m-%d').date()
+    end_at = datetime.strptime(end_at, '%Y-%m-%d').date() - timedelta(days=1)
 
     current_availability = get_curr_availability(pid)
     tmp = list(map(list, current_availability))
@@ -527,7 +527,7 @@ def book():
     # check if user input actually change the current_availability
     if new_availability == current_availability:
         data = {
-            'message': ' booking fail: invalid input or wrong data insertion in DB before', 'code': 'FAIL'}
+            'message': ' booking fail: invalid input', 'code': 'FAIL'}
         return make_response(jsonify(data), 200)
     else:
         modify_availability(new_availability, pid)
