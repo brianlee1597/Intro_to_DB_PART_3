@@ -171,7 +171,10 @@
           <div class="user_history">
             <h3>History:</h3>
             {%for rec in record%}
-            <h1>Property ID: {{rec[0]}} From: {{rec[1]}} To: {{rec[2]}} Address:{{rec[3]}}</h1>
+            <h1>
+              Property ID: {{rec[0]}} From: {{rec[1]}} To: {{rec[2]}}
+              Address:{{rec[3]}}
+            </h1>
             {%endfor%}
           </div>
         </div>
@@ -211,7 +214,7 @@
             alert(JSON.stringify(data));
             window.location.reload();
           })
-          .fail((data) => console.log(data));
+          .fail((data) => alert(data));
       }
 
       // delete your own property function
@@ -320,7 +323,7 @@
                                 <label for="size">Size:</label>
                                 <input class="size" type="text" id="size" name="size" required>
                             </div>
-                            
+
                             <div class="form_row">
                                 <input type="checkbox" id="amenity1" name="amenity1" value="Swimming Pool">
                                 <label for="amenity1"> Swimming Pool</label>

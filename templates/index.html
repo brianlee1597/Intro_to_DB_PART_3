@@ -144,10 +144,12 @@
             start_from,
             end_at,
           }
-        ).done((data) => {
-          alert(JSON.stringify(data));
-          window.location.reload();
-        });
+        )
+          .done((data) => {
+            alert(JSON.stringify(data));
+            window.location.reload();
+          })
+          .fail((data) => alert(data));
       }
 
       /* Open Modal function */
