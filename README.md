@@ -12,8 +12,8 @@ create user, login user, create a property, set availabilities for a property, b
 ## Submission Information
 
 1. PostgreSQL Account:
-- username: hw2910
-- password: 2608
+- username: ****
+- password: ****
 
 2. Our deployment on GCP: http://34.75.2.5:8111/
 
